@@ -8,7 +8,7 @@ import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.MaidGomokuAI;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntitySit;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.MaidGameRecordManager;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -67,7 +67,7 @@ public class TLMBindingInner {
         if (item.isEmpty()) {
             return StringUtils.EMPTY;
         }
-        ResourceLocation key = ForgeRegistries.ITEMS.getKey(item.getItem());
+        Identifier key = ForgeRegistries.ITEMS.getKey(item.getItem());
         if (key == null) {
             return StringUtils.EMPTY;
         }

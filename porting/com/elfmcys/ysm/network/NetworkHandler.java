@@ -26,7 +26,7 @@ import io.netty.util.AttributeKey;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.Connection;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -44,8 +44,8 @@ import java.util.function.Supplier;
 @SuppressWarnings("removal")
 public final class NetworkHandler {
     public static final String VERSION = ProtocolVersion.TRANSPORT_VERSION;
-    public static final ResourceLocation CHANNEL_NAME =
-            new ResourceLocation(YesSteveModel.MOD_ID, ProtocolVersion.CHANNEL_PATH);
+    public static final Identifier CHANNEL_NAME =
+            Identifier.fromNamespaceAndPath(YesSteveModel.MOD_ID, ProtocolVersion.CHANNEL_PATH);
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(CHANNEL_NAME, () -> VERSION,
             NetworkHandler::acceptsTransportVersion, NetworkHandler::acceptsTransportVersion);
     private static final AttributeKey<String> ATTRIBUTE_CHANNEL_VERSION =

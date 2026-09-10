@@ -14,7 +14,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
@@ -29,8 +29,8 @@ import java.util.Objects;
 
 @SuppressWarnings("removal")
 public class SWarfareCompatInner {
-    private static final TagKey<Item> PISTOL = TagKey.create(Registries.ITEM, new ResourceLocation("superbwarfare:animated/pistol"));
-    private static final TagKey<Item> RPG = TagKey.create(Registries.ITEM, new ResourceLocation("superbwarfare:animated/rpg"));
+    private static final TagKey<Item> PISTOL = TagKey.create(Registries.ITEM, Identifier.parse("superbwarfare:animated/pistol"));
+    private static final TagKey<Item> RPG = TagKey.create(Registries.ITEM, Identifier.parse("superbwarfare:animated/rpg"));
 
     static boolean isGun(ItemStack stack) {
         return stack.getItem() instanceof GunItem;

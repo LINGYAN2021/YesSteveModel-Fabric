@@ -5,7 +5,7 @@ import com.elfmcys.ysm.capability.PlayerAnimatableCapabilityProvider;
 import com.elfmcys.ysm.capability.VehicleAnimatableCapabilityProvider;
 import com.elfmcys.ysm.util.ModelIdUtil;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import snownee.jade.api.*;
@@ -21,7 +21,7 @@ public class JadePlugin implements IWailaPlugin {
 
     private static class YSMProvider implements IEntityComponentProvider {
         @SuppressWarnings("removal")
-        private static final ResourceLocation UID = new ResourceLocation(YesSteveModel.MOD_ID, "model_info");
+        private static final Identifier UID = Identifier.fromNamespaceAndPath(YesSteveModel.MOD_ID, "model_info");
 
         @Override
         public void appendTooltip(ITooltip tooltip, EntityAccessor entityAccessor, IPluginConfig config) {
@@ -43,7 +43,7 @@ public class JadePlugin implements IWailaPlugin {
         }
 
         @Override
-        public ResourceLocation getUid() {
+        public Identifier getUid() {
             return UID;
         }
     }

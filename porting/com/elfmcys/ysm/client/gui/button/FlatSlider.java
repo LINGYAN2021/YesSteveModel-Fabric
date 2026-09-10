@@ -11,7 +11,7 @@ import com.elfmcys.ysm.network.forge.ClientProtocolGateway;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraftforge.client.gui.widget.ForgeSlider;
 
@@ -19,7 +19,7 @@ import java.text.DecimalFormat;
 
 @SuppressWarnings("removal")
 public class FlatSlider extends ForgeSlider implements IConfigFormsButton {
-    private static final ResourceLocation BUTTON_TEXTURE = new ResourceLocation(YesSteveModel.MOD_ID, "texture/roulette.png");
+    private static final Identifier BUTTON_TEXTURE = Identifier.fromNamespaceAndPath(YesSteveModel.MOD_ID, "texture/roulette.png");
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
     private final AnimatableEntity<?> animatableEntity;
     private final String molang;

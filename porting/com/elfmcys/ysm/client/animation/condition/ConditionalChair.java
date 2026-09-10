@@ -2,7 +2,7 @@ package com.elfmcys.ysm.client.animation.condition;
 
 import com.elfmcys.ysm.client.compat.touhoulittlemaid.client.TlmClientCompat;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 
 public class ConditionalChair {
@@ -20,7 +20,7 @@ public class ConditionalChair {
             return;
         }
         String substring = name.substring(preSize);
-        if (name.startsWith(idPre) && ResourceLocation.isValidResourceLocation(substring)) {
+        if (name.startsWith(idPre) && (Identifier.tryParse(substring) != null)) {
             idTest.add(substring);
         }
     }

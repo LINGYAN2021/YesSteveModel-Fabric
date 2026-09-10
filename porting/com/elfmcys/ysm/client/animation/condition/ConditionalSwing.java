@@ -3,7 +3,7 @@ package com.elfmcys.ysm.client.animation.condition;
 import com.elfmcys.ysm.util.EnumUtil;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
@@ -22,7 +22,7 @@ public class ConditionalSwing {
     private final String idPre;
     private final String tagPre;
     private final String extraPre;
-    private final ObjectOpenHashSet<ResourceLocation> idTest = new ObjectOpenHashSet<>();
+    private final ObjectOpenHashSet<Identifier> idTest = new ObjectOpenHashSet<>();
     private final ReferenceArrayList<TagKey<Item>> tagTest = new ReferenceArrayList<>();
     private final ObjectOpenHashSet<UseAnim> extraTest = new ObjectOpenHashSet<>();
     private final ObjectOpenHashSet<String> innerTest = new ObjectOpenHashSet<>();
@@ -46,15 +46,15 @@ public class ConditionalSwing {
             return;
         }
         String substring = name.substring(preSize);
-        if (name.startsWith(idPre) && ResourceLocation.isValidResourceLocation(substring)) {
-            idTest.add(new ResourceLocation(substring));
+        if (name.startsWith(idPre) && (Identifier.tryParse(substring) != null)) {
+            idTest.add(Identifier.parse(substring));
         }
-        if (name.startsWith(tagPre) && ResourceLocation.isValidResourceLocation(substring)) {
+        if (name.startsWith(tagPre) && (Identifier.tryParse(substring) != null)) {
             ITagManager<Item> tags = ForgeRegistries.ITEMS.tags();
             if (tags == null) {
                 return;
             }
-            TagKey<Item> tagKey = tags.createTagKey(new ResourceLocation(substring));
+            TagKey<Item> tagKey = tags.createTagKey(Identifier.parse(substring));
             tagTest.add(tagKey);
         }
         if (name.startsWith(extraPre)) {
@@ -86,7 +86,7 @@ public class ConditionalSwing {
             return EMPTY;
         }
         ItemStack itemInHand = livingEntity.getItemInHand(hand);
-        ResourceLocation registryName = ForgeRegistries.ITEMS.getKey(itemInHand.getItem());
+        Identifier registryName = ForgeRegistries.ITEMS.getKey(itemInHand.getItem());
         if (registryName == null) {
             return EMPTY;
         }

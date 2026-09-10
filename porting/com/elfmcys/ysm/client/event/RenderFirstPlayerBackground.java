@@ -13,7 +13,7 @@ import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
@@ -80,7 +80,7 @@ public class RenderFirstPlayerBackground {
                 return;
             }
 
-            ResourceLocation textureLocation = cap.getTextureLocation();
+            Identifier textureLocation = cap.getTextureLocation();
             var vertexConsumer = multiBufferSource.getBuffer(CustomTranslucentRenderType.create(textureLocation));
 
             if (renderer != null) {

@@ -26,7 +26,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -217,7 +217,7 @@ public class YSMBinding extends ContextBinding {
                 return "";
             }
             BlockState blockState = level.getBlockState(result.getBlockPos());
-            ResourceLocation id = ForgeRegistries.BLOCKS.getKey(blockState.getBlock());
+            Identifier id = ForgeRegistries.BLOCKS.getKey(blockState.getBlock());
             if (id != null) {
                 return id.toString();
             } else {
@@ -227,7 +227,7 @@ public class YSMBinding extends ContextBinding {
 
         if (hitResult instanceof EntityHitResult result) {
             Entity entity = result.getEntity();
-            ResourceLocation id = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType());
+            Identifier id = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType());
             if (id != null) {
                 return id.toString();
             } else {
@@ -253,7 +253,7 @@ public class YSMBinding extends ContextBinding {
     private static String getHookedIn(IContext<FishingHook> ctx) {
         Entity hooked = ((FishingHookAccessor) ctx.entity()).ysm$GetHookedIn();
         if (hooked != null) {
-            ResourceLocation id = ForgeRegistries.ENTITY_TYPES.getKey(hooked.getType());
+            Identifier id = ForgeRegistries.ENTITY_TYPES.getKey(hooked.getType());
             if (id != null) {
                 return id.toString();
             }
@@ -265,7 +265,7 @@ public class YSMBinding extends ContextBinding {
         ThrowableItemProjectile entity = ctx.entity();
         if (entity instanceof ThrowableItemProjectileAccessor accessor) {
             Item item = accessor.ysm$GetDefaultItem();
-            ResourceLocation id = ForgeRegistries.ITEMS.getKey(item);
+            Identifier id = ForgeRegistries.ITEMS.getKey(item);
             if (id != null) {
                 return id.toString();
             }
@@ -329,7 +329,7 @@ public class YSMBinding extends ContextBinding {
         if (entity instanceof Player) {
             return "player";
         }
-        ResourceLocation key = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType());
+        Identifier key = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType());
         if (key == null) {
             return StringUtils.EMPTY;
         }
@@ -400,7 +400,7 @@ public class YSMBinding extends ContextBinding {
         }
 
         for (MobEffectInstance instance : effects) {
-            ResourceLocation id = ForgeRegistries.MOB_EFFECTS.getKey(instance.getEffect());
+            Identifier id = ForgeRegistries.MOB_EFFECTS.getKey(instance.getEffect());
             context.debugPrint(Component.literal("Effect: display ").append(ComponentUtils.copyOnClickText(instance.getEffect().getDisplayName().getString(99)))
                     .append(Component.literal("  name ").append(ComponentUtils.copyOnClickText(id.toString())))
                     .append("  lv=").append(String.valueOf(instance.getAmplifier() + 1)));

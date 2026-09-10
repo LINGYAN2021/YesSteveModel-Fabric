@@ -5,7 +5,7 @@ import com.elfmcys.ysm.geckolib3.core.molang.function.entity.EntityFunction;
 import com.elfmcys.ysm.geckolib3.util.MolangUtils;
 import com.elfmcys.ysm.molang.runtime.ExecutionContext;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public class RelativeBlockName extends EntityFunction {
@@ -15,7 +15,7 @@ public class RelativeBlockName extends EntityFunction {
         if (block == null) {
             return null;
         }
-        ResourceLocation blockId = ForgeRegistries.BLOCKS.getKey(block.getBlock());
+        Identifier blockId = ForgeRegistries.BLOCKS.getKey(block.getBlock());
         if (blockId == null) {
             return null;
         }

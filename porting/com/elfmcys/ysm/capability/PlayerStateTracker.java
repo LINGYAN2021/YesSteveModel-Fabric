@@ -3,7 +3,7 @@ package com.elfmcys.ysm.capability;
 import com.elfmcys.ysm.client.entity.HumanoidStateTracker;
 import com.elfmcys.ysm.proto.network.protocol.v0.PlayerStateV0;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import it.unimi.dsi.fastutil.objects.Object2ByteOpenHashMap;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.player.Player;
@@ -68,7 +68,7 @@ public class PlayerStateTracker extends HumanoidStateTracker<Player> {
         if (effectState != null) {
             if (full) effects.clear();
             for (var value : effectState.getEffects()) {
-                var key = ResourceLocation.tryParse(value.getEffectId());
+                var key = Identifier.tryParse(value.getEffectId());
                 var effect = key == null ? null : BuiltInRegistries.MOB_EFFECT.get(key);
                 if (effect != null) {
                     if (value.getLevel() == 0) effects.removeByte(effect);

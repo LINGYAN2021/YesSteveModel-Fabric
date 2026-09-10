@@ -1,9 +1,9 @@
 package com.elfmcys.ysm.client.texture;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.Optional;
 
 public interface TextureHolder {
-    Optional<ResourceLocation> id();
+    Optional<Identifier> id();
 }

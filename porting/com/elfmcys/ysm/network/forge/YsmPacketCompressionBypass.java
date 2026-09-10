@@ -7,7 +7,7 @@ import io.netty.channel.ChannelOutboundHandlerAdapter;
 import io.netty.channel.ChannelPromise;
 import net.minecraft.network.CompressionEncoder;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraftforge.network.ICustomPacket;
 
 public final class YsmPacketCompressionBypass {
@@ -18,13 +18,13 @@ public final class YsmPacketCompressionBypass {
     }
 
     public static final class Marker extends ChannelOutboundHandlerAdapter {
-        private final ResourceLocation channelName;
+        private final Identifier channelName;
 
         public Marker() {
             this(NetworkHandler.CHANNEL_NAME);
         }
 
-        Marker(ResourceLocation channelName) {
+        Marker(Identifier channelName) {
             this.channelName = channelName;
         }
 

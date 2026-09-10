@@ -5,7 +5,7 @@ import com.elfmcys.ysm.util.CleanerUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.AbstractTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.apache.commons.lang3.time.StopWatch;
 
 import java.lang.ref.WeakReference;
@@ -161,15 +161,15 @@ public class CustomTextureManager {
     }
 
     @SuppressWarnings("removal")
-    private static ResourceLocation nextId() {
-        return new ResourceLocation(YesSteveModel.MOD_ID, "textures/" + ++COUNTER);
+    private static Identifier nextId() {
+        return Identifier.fromNamespaceAndPath(YesSteveModel.MOD_ID, "textures/" + ++COUNTER);
     }
 
     private static final class TextureRegistration {
-        private final TextureRegistrationState<ResourceLocation> state;
+        private final TextureRegistrationState<Identifier> state;
         private WeakReference<TextureHolderImpl> holder;
 
-        private TextureRegistration(TextureRegistrationState<ResourceLocation> state) {
+        private TextureRegistration(TextureRegistrationState<Identifier> state) {
             this.state = state;
         }
 
@@ -196,19 +196,19 @@ public class CustomTextureManager {
     }
 
     private static class TextureHolderImpl implements TextureHolder {
-        private final ResourceLocation id;
+        private final Identifier id;
         private final TextureRegistrationState.Token token;
         private List<TextureHolder> pbr;
         private volatile boolean ready;
 
-        private TextureHolderImpl(ResourceLocation id, TextureRegistrationState.Token token, boolean ready) {
+        private TextureHolderImpl(Identifier id, TextureRegistrationState.Token token, boolean ready) {
             this.id = id;
             this.token = token;
             this.ready = ready;
         }
 
         @Override
-        public Optional<ResourceLocation> id() {
+        public Optional<Identifier> id() {
             return ready ? Optional.of(id) : Optional.empty();
         }
 

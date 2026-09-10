@@ -123,6 +123,7 @@ dependencies {
     compileOnly 'org.jetbrains:annotations:26.0.1'
 
     ysmImplementation 'us.hebi.quickbuf:quickbuf-runtime:1.4'
+    ysmImplementation 'org.apache.maven:maven-artifact:3.9.9'
     implementation 'org.yaml:snakeyaml:2.2'
 
     testImplementation platform('org.junit:junit-bom:5.11.4')
@@ -151,12 +152,14 @@ tasks.named('shadowJar') {
     archiveClassifier = ''
     exclude '**/*.proto'
     relocate 'us.hebi.quickbuf', 'com.elfmcys.quickbuf'
+    relocate 'org.apache.maven.artifact', 'com.elfmcys.maven.artifact'
 }
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
     options.compilerArgs += [
-            '-Xlint:-removal'
+            '-Xlint:-removal',
+            '-Xmaxerrs', '10000'
     ]
 }
 

@@ -18,7 +18,7 @@ import com.tacz.guns.client.model.functional.ShellRender;
 import com.tacz.guns.resource.index.CommonGunIndex;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
@@ -204,7 +204,7 @@ class TacCompatInner {
     }
 
     @Nullable
-    static ResourceLocation getGunId(ItemStack itemInHand) {
+    static Identifier getGunId(ItemStack itemInHand) {
         IGun iGun = IGun.getIGunOrNull(itemInHand);
         if (iGun == null) {
             return null;

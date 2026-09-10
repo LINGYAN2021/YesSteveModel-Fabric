@@ -15,7 +15,7 @@ import mcjty.theoneprobe.api.IProbeInfoEntityProvider;
 import mcjty.theoneprobe.api.ITheOneProbe;
 import mcjty.theoneprobe.api.ProbeMode;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -37,7 +37,7 @@ public final class TopPlugin implements Function<ITheOneProbe, Void> {
 
     private static class YSMProvider implements IProbeInfoEntityProvider {
         @SuppressWarnings("removal")
-        private static final String ID = (new ResourceLocation(YesSteveModel.MOD_ID, "model_info")).toString();
+        private static final String ID = (Identifier.fromNamespaceAndPath(YesSteveModel.MOD_ID, "model_info")).toString();
 
         @Override
         public void addProbeEntityInfo(ProbeMode probeMode, IProbeInfo probeInfo, Player sourcePlayer, Level world, Entity entity, IProbeHitEntityData iProbeHitEntityData) {

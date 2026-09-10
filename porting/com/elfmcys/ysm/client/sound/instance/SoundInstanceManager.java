@@ -5,7 +5,7 @@ import com.elfmcys.ysm.init.ModSounds;
 import it.unimi.dsi.fastutil.ints.Int2ReferenceOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,7 +24,7 @@ public class SoundInstanceManager {
         MinecraftSoundInstance instance;
         if (soundName.contains(":")) {
             // 如果声音名带冒号，那么大概率就是调用原版音频，因为 Windows 中冒号不是合法的文件名
-            var soundId = ResourceLocation.tryParse(soundName);
+            var soundId = Identifier.tryParse(soundName);
             if (soundId != null) {
                 SoundEvent soundEvent = SoundEvent.createVariableRangeEvent(soundId);
                 instance = new MinecraftSoundInstance(soundEvent, animatable.getEntity());

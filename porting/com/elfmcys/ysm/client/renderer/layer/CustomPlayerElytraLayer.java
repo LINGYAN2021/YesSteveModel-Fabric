@@ -10,12 +10,12 @@ import net.minecraft.client.model.ElytraModel;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 
 public class CustomPlayerElytraLayer extends GeoLayerRenderer<CustomPlayerEntity> {
-    private static final ResourceLocation WINGS_LOCATION = new ResourceLocation("textures/entity/elytra.png");
+    private static final Identifier WINGS_LOCATION = Identifier.parse("textures/entity/elytra.png");
     private final ElytraModel<LivingEntity> elytraModel;
 
     public CustomPlayerElytraLayer(EntityRendererProvider.Context context) {
@@ -29,7 +29,7 @@ public class CustomPlayerElytraLayer extends GeoLayerRenderer<CustomPlayerEntity
         AnimatedGeoModel geoModel = animatable.getLoadedGeoModel();
         // TODO
 //        if (!stack.isEmpty() && geoModel != null && !geoModel.elytraBones().isEmpty() && player instanceof AbstractClientPlayer clientPlayer) {
-//            ResourceLocation texture;
+//            Identifier texture;
 //            if (clientPlayer.isElytraLoaded() && clientPlayer.getElytraTextureLocation() != null) {
 //                texture = clientPlayer.getElytraTextureLocation();
 //            } else if (clientPlayer.isCapeLoaded() && clientPlayer.getCloakTextureLocation() != null && player.isModelPartShown(PlayerModelPart.CAPE)) {

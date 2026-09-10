@@ -5,7 +5,7 @@ import com.elfmcys.ysm.util.EquipmentUtil;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -26,7 +26,7 @@ public class ConditionArmor {
     private static final Pattern TAG_PRE_REG = Pattern.compile("^(.+?)#(.*?)$");
     private static final String EMPTY = "";
 
-    private final Reference2ReferenceOpenHashMap<EquipmentSlot, ObjectOpenHashSet<ResourceLocation>> idTest = new Reference2ReferenceOpenHashMap<>();
+    private final Reference2ReferenceOpenHashMap<EquipmentSlot, ObjectOpenHashSet<Identifier>> idTest = new Reference2ReferenceOpenHashMap<>();
     private final Reference2ReferenceOpenHashMap<EquipmentSlot, ReferenceArrayList<TagKey<Item>>> tagTest = new Reference2ReferenceOpenHashMap<>();
 
     public void addTest(String name) {
@@ -37,10 +37,10 @@ public class ConditionArmor {
                 return;
             }
             String id = matcherId.group(2);
-            if (!ResourceLocation.isValidResourceLocation(id)) {
+            if (!(Identifier.tryParse(id) != null)) {
                 return;
             }
-            idTest.computeIfAbsent(type, k -> new ObjectOpenHashSet<>()).add(new ResourceLocation(id));
+            idTest.computeIfAbsent(type, k -> new ObjectOpenHashSet<>()).add(Identifier.parse(id));
         }
 
         Matcher matcherTag = TAG_PRE_REG.matcher(name);
@@ -50,14 +50,14 @@ public class ConditionArmor {
                 return;
             }
             String id = matcherTag.group(2);
-            if (!ResourceLocation.isValidResourceLocation(id)) {
+            if (!(Identifier.tryParse(id) != null)) {
                 return;
             }
             ITagManager<Item> tags = ForgeRegistries.ITEMS.tags();
             if (tags == null) {
                 return;
             }
-            TagKey<Item> tagKey = tags.createTagKey(new ResourceLocation(id));
+            TagKey<Item> tagKey = tags.createTagKey(Identifier.parse(id));
             tagTest.computeIfAbsent(type, t -> new ReferenceArrayList<>()).add(tagKey);
         }
     }
@@ -81,9 +81,9 @@ public class ConditionArmor {
         if (!idTest.containsKey(slot) || idTest.get(slot).isEmpty()) {
             return EMPTY;
         }
-        Set<ResourceLocation> idListTest = idTest.get(slot);
+        Set<Identifier> idListTest = idTest.get(slot);
         ItemStack item = EquipmentUtil.getEquippedItem(livingEntity, slot);
-        ResourceLocation registryName = ForgeRegistries.ITEMS.getKey(item.getItem());
+        Identifier registryName = ForgeRegistries.ITEMS.getKey(item.getItem());
         if (registryName == null) {
             return EMPTY;
         }

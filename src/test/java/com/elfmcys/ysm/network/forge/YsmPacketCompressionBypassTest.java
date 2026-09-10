@@ -7,7 +7,7 @@ import io.netty.channel.embedded.EmbeddedChannel;
 import io.netty.handler.codec.MessageToMessageEncoder;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraftforge.network.ICustomPacket;
 import org.junit.jupiter.api.Test;
 
@@ -18,8 +18,8 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 @SuppressWarnings("removal")
 class YsmPacketCompressionBypassTest {
-    private static final ResourceLocation YSM_CHANNEL =
-            new ResourceLocation("ysm", "network");
+    private static final Identifier YSM_CHANNEL =
+            Identifier.fromNamespaceAndPath("ysm", "network");
 
     @Test
     void markedPacketUsesMinecraftUncompressedEnvelope() {
@@ -44,7 +44,7 @@ class YsmPacketCompressionBypassTest {
     @Test
     void unmarkedPacketStillUsesMinecraftZlib() {
         var channel = channel(new byte[512]);
-        channel.writeOutbound(new TestCustomPacket(new ResourceLocation("other", "channel")));
+        channel.writeOutbound(new TestCustomPacket(Identifier.fromNamespaceAndPath("other", "channel")));
         ByteBuf output = channel.readOutbound();
         var encoded = new FriendlyByteBuf(output);
         try {
@@ -62,14 +62,14 @@ class YsmPacketCompressionBypassTest {
                 new YsmPacketCompressionBypass.Marker(YSM_CHANNEL));
     }
 
-    private record TestCustomPacket(ResourceLocation name) implements ICustomPacket<Packet<?>> {
+    private record TestCustomPacket(Identifier name) implements ICustomPacket<Packet<?>> {
         @Override
         public FriendlyByteBuf getInternalData() {
             return null;
         }
 
         @Override
-        public ResourceLocation getName() {
+        public Identifier getName() {
             return name;
         }
 

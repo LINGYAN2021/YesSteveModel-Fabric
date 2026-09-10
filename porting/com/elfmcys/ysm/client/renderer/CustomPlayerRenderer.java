@@ -19,7 +19,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.scores.Objective;
@@ -30,7 +30,7 @@ import net.minecraftforge.common.MinecraftForge;
 import org.jetbrains.annotations.NotNull;
 
 public class CustomPlayerRenderer extends GeoReplacedEntityRenderer<Player, CustomPlayerEntity> {
-    private ResourceLocation textureOverride;
+    private Identifier textureOverride;
 
     @SuppressWarnings("all")
     public CustomPlayerRenderer(EntityRendererProvider.Context ctx) {
@@ -97,7 +97,7 @@ public class CustomPlayerRenderer extends GeoReplacedEntityRenderer<Player, Cust
 
     @Override
     @NotNull
-    public ResourceLocation getTextureLocation(Player pEntity) {
+    public Identifier getTextureLocation(Player pEntity) {
         return textureOverride == null ? pEntity.getCapability(PlayerAnimatableCapabilityProvider.CAP).map(CustomPlayerEntity::getTextureLocation).orElse(MissingTextureAtlasSprite.getLocation()) : textureOverride;
     }
 

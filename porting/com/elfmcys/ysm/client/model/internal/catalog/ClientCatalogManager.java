@@ -24,7 +24,7 @@ import com.elfmcys.ysm.network.message.model.TransferKind;
 import mixel.manifest.asset.RenderTargetOuterClass;
 import com.elfmcys.ysm.util.ModelIdUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -112,7 +112,7 @@ public final class ClientCatalogManager implements AutoCloseable {
 
     public Optional<String> findRenderTarget(Hash256 hash,
                                              RenderTargetOuterClass.RenderTargetKind kind,
-                                             ResourceLocation entityType) {
+                                             Identifier entityType) {
         var entry = catalog.find(hash).orElse(null);
         if (entry == null) {
             return Optional.empty();

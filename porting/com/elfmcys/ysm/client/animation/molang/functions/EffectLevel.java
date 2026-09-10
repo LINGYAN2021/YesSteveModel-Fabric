@@ -10,7 +10,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public class EffectLevel extends ContextFunction<Entity> {
@@ -23,7 +23,7 @@ public class EffectLevel extends ContextFunction<Entity> {
     protected Object eval(ExecutionContext<IContext<Entity>> context, ArgumentCollection arguments) {
         int sum = 0;
         for (var i = 0; i < arguments.size(); ++i) {
-            ResourceLocation effectId = arguments.getAsResourceLocation(context, i);
+            Identifier effectId = arguments.getAsResourceLocation(context, i);
             if (effectId == null) {
                 continue;
             }

@@ -7,7 +7,7 @@ import com.elfmcys.ysm.molang.runtime.ExecutionContext;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public class DumpRelativeBlock extends EntityFunction {
@@ -21,7 +21,7 @@ public class DumpRelativeBlock extends EntityFunction {
         if (block == null) {
             return null;
         }
-        ResourceLocation blockId = ForgeRegistries.BLOCKS.getKey(block.getBlock());
+        Identifier blockId = ForgeRegistries.BLOCKS.getKey(block.getBlock());
         if (blockId == null) {
             return null;
         }

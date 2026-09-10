@@ -6,7 +6,7 @@ import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -16,8 +16,8 @@ import java.util.Map;
 @Mod.EventBusSubscriber(value = Dist.CLIENT)
 @SuppressWarnings("removal")
 public class VanillaPlayerRenderEvent {
-    private static final ResourceLocation STEVE_SKIN_LOCATION = new ResourceLocation("textures/entity/player/wide/steve.png");
-    private static final ResourceLocation ALEX_SKIN_LOCATION = new ResourceLocation("textures/entity/player/slim/alex.png");
+    private static final Identifier STEVE_SKIN_LOCATION = Identifier.parse("textures/entity/player/wide/steve.png");
+    private static final Identifier ALEX_SKIN_LOCATION = Identifier.parse("textures/entity/player/slim/alex.png");
     private static final String STEVE = "misc/2_steve";
     private static final String ALEX = "misc/1_alex";
 
@@ -29,7 +29,7 @@ public class VanillaPlayerRenderEvent {
         Player player = event.getPlayer();
         if (isVanillaPlayer(event.getModelId()) && player instanceof AbstractClientPlayer) {
             AbstractClientPlayer clientPlayer = (AbstractClientPlayer) player;
-            ResourceLocation location;
+            Identifier location;
             Minecraft minecraft = Minecraft.getInstance();
             Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> map = minecraft.getSkinManager().getInsecureSkinInformation(clientPlayer.getGameProfile());
             if (map.containsKey(MinecraftProfileTexture.Type.SKIN)) {
@@ -45,7 +45,7 @@ public class VanillaPlayerRenderEvent {
         return modelId.equals(STEVE) || modelId.equals(ALEX);
     }
 
-    private static ResourceLocation getDefaultSkin(String modelId) {
+    private static Identifier getDefaultSkin(String modelId) {
         return modelId.equals(STEVE) ? STEVE_SKIN_LOCATION : ALEX_SKIN_LOCATION;
     }
 }

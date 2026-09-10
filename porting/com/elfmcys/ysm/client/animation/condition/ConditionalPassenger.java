@@ -2,7 +2,7 @@ package com.elfmcys.ysm.client.animation.condition;
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -12,7 +12,7 @@ import net.minecraftforge.registries.tags.ITagManager;
 
 public class ConditionalPassenger {
     private static final String EMPTY = "";
-    private final ObjectOpenHashSet<ResourceLocation> idTest = new ObjectOpenHashSet<>();
+    private final ObjectOpenHashSet<Identifier> idTest = new ObjectOpenHashSet<>();
     private final ReferenceArrayList<TagKey<EntityType<?>>> tagTest = new ReferenceArrayList<>();
     private final String idPre;
     private final String tagPre;
@@ -28,15 +28,15 @@ public class ConditionalPassenger {
             return;
         }
         String substring = name.substring(preSize);
-        if (name.startsWith(idPre) && ResourceLocation.isValidResourceLocation(substring)) {
-            idTest.add(new ResourceLocation(substring));
+        if (name.startsWith(idPre) && (Identifier.tryParse(substring) != null)) {
+            idTest.add(Identifier.parse(substring));
         }
-        if (name.startsWith(tagPre) && ResourceLocation.isValidResourceLocation(substring)) {
+        if (name.startsWith(tagPre) && (Identifier.tryParse(substring) != null)) {
             ITagManager<EntityType<?>> tags = ForgeRegistries.ENTITY_TYPES.tags();
             if (tags == null) {
                 return;
             }
-            TagKey<EntityType<?>> tagKey = tags.createTagKey(new ResourceLocation(substring));
+            TagKey<EntityType<?>> tagKey = tags.createTagKey(Identifier.parse(substring));
             tagTest.add(tagKey);
         }
     }
@@ -57,7 +57,7 @@ public class ConditionalPassenger {
         if (idTest.isEmpty()) {
             return EMPTY;
         }
-        ResourceLocation registryName = ForgeRegistries.ENTITY_TYPES.getKey(passenger.getType());
+        Identifier registryName = ForgeRegistries.ENTITY_TYPES.getKey(passenger.getType());
         if (registryName == null) {
             return EMPTY;
         }

@@ -15,7 +15,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
 
 import java.util.List;
@@ -23,13 +23,13 @@ import java.util.List;
 public class AuthorButton extends Button {
     private final ModelAuthor author;
     private final ModelRenderTarget model;
-    private ResourceLocation avatar;
+    private Identifier avatar;
     private final int index;
     private final List<Component> tooltips;
     private int selectedContactIndex = -1;
     private final Screen parent;
 
-    public AuthorButton(int pX, int pY, ModelAuthor author, ModelRenderTarget model, ResourceLocation avatar, int index, Screen parent) {
+    public AuthorButton(int pX, int pY, ModelAuthor author, ModelRenderTarget model, Identifier avatar, int index, Screen parent) {
         super(pX, pY, 70, 130, Component.empty(), b -> {
         }, DEFAULT_NARRATION);
         this.author = author;
@@ -47,7 +47,7 @@ public class AuthorButton extends Button {
         return new AuthorButton(pX, pY, null, null, null, -1, parent);
     }
 
-    public void setAvatar(ResourceLocation avatar) {
+    public void setAvatar(Identifier avatar) {
         this.avatar = avatar;
     }
 

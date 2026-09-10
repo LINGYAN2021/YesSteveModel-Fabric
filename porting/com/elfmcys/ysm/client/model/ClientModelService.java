@@ -22,7 +22,7 @@ import mixel.manifest.asset.RenderTargetOuterClass;
 import com.elfmcys.ysm.proto.network.protocol.v0.AssetTransferV0;
 import com.elfmcys.ysm.task.TaskContext;
 import com.elfmcys.ysm.task.TaskScope;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -163,13 +163,13 @@ public final class ClientModelService implements AutoCloseable {
 
     public Optional<String> findRenderTarget(Hash256 hash,
                                              RenderTargetOuterClass.RenderTargetKind kind,
-                                             ResourceLocation entityType) {
+                                             Identifier entityType) {
         return catalogManager.findRenderTarget(hash, kind, entityType);
     }
 
     public Optional<String> findDefaultRenderTarget(
             RenderTargetOuterClass.RenderTargetKind kind,
-            ResourceLocation entityType) {
+            Identifier entityType) {
         return findRenderTarget(renderTargetManager.defaultRenderTarget().modelHash(), kind, entityType);
     }
 

@@ -18,7 +18,7 @@ import it.unimi.dsi.fastutil.booleans.BooleanArrayList;
 import it.unimi.dsi.fastutil.booleans.BooleanList;
 import it.unimi.dsi.fastutil.floats.FloatArrayList;
 import net.minecraft.client.renderer.texture.AbstractTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -264,7 +264,7 @@ public abstract class CustomHumanoidEntity<T extends LivingEntity> extends Custo
     @Override
     @NotNull
     @SuppressWarnings("unchecked")
-    public ResourceLocation getTextureLocation() {
+    public Identifier getTextureLocation() {
         return ((HumanoidResourceHolder) getResourceHolder()).textureHolder.id().get();
     }
 

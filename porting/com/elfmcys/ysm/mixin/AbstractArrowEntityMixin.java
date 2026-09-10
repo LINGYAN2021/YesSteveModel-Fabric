@@ -2,7 +2,7 @@ package com.elfmcys.ysm.mixin;
 
 import com.elfmcys.ysm.YesSteveModel;
 import com.elfmcys.ysm.accessor.IArrowExtraInfo;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.AbstractArrow;
@@ -49,7 +49,7 @@ public class AbstractArrowEntityMixin implements IArrowExtraInfo {
         }
         // 设置 owner 时，缓存一下射击时主手物品 ID，用于 molang
         if (owner instanceof LivingEntity livingEntity) {
-            ResourceLocation key = ForgeRegistries.ITEMS.getKey(livingEntity.getMainHandItem().getItem());
+            Identifier key = ForgeRegistries.ITEMS.getKey(livingEntity.getMainHandItem().getItem());
             if (key != null) {
                 shootItemId = key.toString();
             }

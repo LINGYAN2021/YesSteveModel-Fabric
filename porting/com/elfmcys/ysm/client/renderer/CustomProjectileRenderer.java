@@ -8,7 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.projectile.Projectile;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,7 +30,7 @@ public class CustomProjectileRenderer extends GeoProjectilesRenderer<Projectile,
 
     @Override
     @NotNull
-    public ResourceLocation getTextureLocation(Projectile entity) {
+    public Identifier getTextureLocation(Projectile entity) {
         return entity.getCapability(ProjectileAnimatableCapabilityProvider.CAP).map(CustomProjectileEntity::getTextureLocation).orElse(MissingTextureAtlasSprite.getLocation());
     }
 }

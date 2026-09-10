@@ -3,7 +3,7 @@ package com.elfmcys.ysm.client.animation.molang.functions;
 import com.elfmcys.ysm.geckolib3.core.molang.context.IContext;
 import com.elfmcys.ysm.geckolib3.core.molang.function.entity.LivingEntityFunction;
 import com.elfmcys.ysm.molang.runtime.ExecutionContext;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -50,7 +50,7 @@ public class RideCheck extends LivingEntityFunction {
         String subInput = input.substring(1);
         EntityType<?> entityType = checkEntity.getType();
         if (input.startsWith(ID_PREFIX)) {
-            ResourceLocation registryName = ForgeRegistries.ENTITY_TYPES.getKey(entityType);
+            Identifier registryName = ForgeRegistries.ENTITY_TYPES.getKey(entityType);
             if (registryName == null) {
                 return FALSE;
             }
@@ -63,7 +63,7 @@ public class RideCheck extends LivingEntityFunction {
             if (tags == null) {
                 return FALSE;
             }
-            ResourceLocation tag = new ResourceLocation(subInput);
+            Identifier tag = Identifier.parse(subInput);
             TagKey<EntityType<?>> tagKey = tags.createTagKey(tag);
             return entityType.is(tagKey) ? TRUE : FALSE;
         }

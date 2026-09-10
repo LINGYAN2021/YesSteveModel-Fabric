@@ -25,7 +25,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.synchronization.SuggestionProviders;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 
@@ -46,7 +46,7 @@ public class ClientRootCommand {
         dispatcher.register(root);
     }
 
-    public static final SuggestionProvider<CommandSourceStack> ALL_VARS = SuggestionProviders.register(new ResourceLocation(YesSteveModel.MOD_ID, "vars"), (source, builder) -> {
+    public static final SuggestionProvider<CommandSourceStack> ALL_VARS = SuggestionProviders.register(Identifier.fromNamespaceAndPath(YesSteveModel.MOD_ID, "vars"), (source, builder) -> {
         if (source.getSource() instanceof SharedSuggestionProvider && FMLEnvironment.dist == Dist.CLIENT) {
             return getTarget().map(cap -> {
                 // v 变量
@@ -83,7 +83,7 @@ public class ClientRootCommand {
         return Suggestions.empty();
     });
 
-    public static final SuggestionProvider<CommandSourceStack> ALL_CONTROLLERS = SuggestionProviders.register(new ResourceLocation(YesSteveModel.MOD_ID, "controllers"), (source, builder) -> {
+    public static final SuggestionProvider<CommandSourceStack> ALL_CONTROLLERS = SuggestionProviders.register(Identifier.fromNamespaceAndPath(YesSteveModel.MOD_ID, "controllers"), (source, builder) -> {
         if (source.getSource() instanceof SharedSuggestionProvider && FMLEnvironment.dist == Dist.CLIENT) {
             return getTarget().map(target -> {
                 Set<String> vars = target.getAnimationData()

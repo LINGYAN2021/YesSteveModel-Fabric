@@ -11,7 +11,7 @@ import com.elfmcys.ysm.geckolib3.core.builder.controller.AnimationControllerData
 import com.elfmcys.ysm.geckolib3.geo.render.built.GeoModel;
 import mixel.manifest.asset.RenderTargetOuterClass;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.projectile.Projectile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -83,7 +83,7 @@ public class CustomProjectileEntity extends CustomEntity<Projectile> {
 
     @Override
     @NotNull
-    public ResourceLocation getTextureLocation() {
+    public Identifier getTextureLocation() {
         return ((ProjectileResourceHolder) this.getResourceHolder()).textureHolder.id().orElseGet(MissingTextureAtlasSprite::getLocation);
     }
 

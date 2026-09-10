@@ -13,7 +13,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraftforge.registries.ForgeRegistries;
 
 
@@ -34,7 +34,7 @@ public class DumpEquippedItem extends LivingEntityFunction {
             return null;
         }
 
-        ResourceLocation id = ForgeRegistries.ITEMS.getKey(itemStack.getItem());
+        Identifier id = ForgeRegistries.ITEMS.getKey(itemStack.getItem());
         if (id == null) {
             return null;
         }
@@ -48,7 +48,7 @@ public class DumpEquippedItem extends LivingEntityFunction {
         for (Tag nbt : itemStack.getEnchantmentTags()) {
             if (nbt instanceof CompoundTag) {
                 CompoundTag compoundnbt = (CompoundTag) nbt;
-                ResourceLocation enchantmentId = ResourceLocation.tryParse(compoundnbt.getString("id"));
+                Identifier enchantmentId = Identifier.tryParse(compoundnbt.getString("id"));
                 if (enchantmentId == null) {
                     continue;
                 }

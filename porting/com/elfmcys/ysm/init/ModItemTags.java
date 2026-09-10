@@ -1,7 +1,7 @@
 package com.elfmcys.ysm.init;
 
 import com.elfmcys.ysm.YesSteveModel;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -21,6 +21,6 @@ public class ModItemTags {
     public static final TagKey<Item> SLASH_BLADE = tag("slashblade");
 
     private static TagKey<Item> tag(String name) {
-        return ItemTags.create(new ResourceLocation(YesSteveModel.MOD_ID, name));
+        return ItemTags.create(Identifier.fromNamespaceAndPath(YesSteveModel.MOD_ID, name));
     }
 }

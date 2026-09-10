@@ -15,7 +15,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
@@ -59,7 +59,7 @@ public class CustomYsmMaidRenderer extends GeoReplacedEntityRenderer<EntityMaid,
 
     @NotNull
     @Override
-    public ResourceLocation getTextureLocation(EntityMaid maid) {
+    public Identifier getTextureLocation(EntityMaid maid) {
         return maid.getCapability(YsmMaidCapabilityProvider.CAP).map(CustomYsmMaidEntity::getTextureLocation).orElse(MissingTextureAtlasSprite.getLocation());
     }
 

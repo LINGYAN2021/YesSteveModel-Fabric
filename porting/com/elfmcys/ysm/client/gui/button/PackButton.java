@@ -16,7 +16,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
@@ -29,7 +29,7 @@ import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 
 public class PackButton extends Button implements AutoCloseable {
-    private final static ResourceLocation ICON = new ResourceLocation(YesSteveModel.MOD_ID, "texture/default_pack_icon.png");
+    private final static Identifier ICON = Identifier.fromNamespaceAndPath(YesSteveModel.MOD_ID, "texture/default_pack_icon.png");
 
     private final ModelPackInfo pack;
     private @Nullable CustomTexture texture;
@@ -77,7 +77,7 @@ public class PackButton extends Button implements AutoCloseable {
 
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        var iconId = icon == null ? Optional.<ResourceLocation>empty() : icon.id();
+        var iconId = icon == null ? Optional.<Identifier>empty() : icon.id();
         if (iconId.isEmpty()) {
             graphics.blit(ICON, this.getX(), this.getY(), 0, 0, this.width,
                     this.height, this.width, this.height);

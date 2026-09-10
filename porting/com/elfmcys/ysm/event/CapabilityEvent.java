@@ -22,7 +22,7 @@ import com.elfmcys.ysm.network.forge.MinecraftStateHandler;
 import com.elfmcys.ysm.proto.network.protocol.v0.PlayerStateV0;
 import com.elfmcys.ysm.network.forge.ControlHandler;
 import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -42,15 +42,15 @@ import java.util.Optional;
 @Mod.EventBusSubscriber
 @SuppressWarnings("removal")
 public final class CapabilityEvent {
-    private static final ResourceLocation MODEL_INFO_CAP = new ResourceLocation(YesSteveModel.MOD_ID, "model_id");
-    private static final ResourceLocation PROJECTILE_MODEL_INFO_CAP = new ResourceLocation(YesSteveModel.MOD_ID, "projectile_model_id");
-    private static final ResourceLocation VEHICLE_MODEL_INFO_CAP = new ResourceLocation(YesSteveModel.MOD_ID, "vehicle_model_id");
-    private static final ResourceLocation AUTH_MODELS_CAP = new ResourceLocation(YesSteveModel.MOD_ID, "own_models");
-    private static final ResourceLocation STAR_MODELS_CAP = new ResourceLocation(YesSteveModel.MOD_ID, "star_models");
-    private static final ResourceLocation ANIMATABLE_CAP = new ResourceLocation(YesSteveModel.MOD_ID, "animatable");
-    private static final ResourceLocation PROJECTILE_ANIMATABLE_CAP = new ResourceLocation(YesSteveModel.MOD_ID, "projectile_animatable");
-    private static final ResourceLocation VEHICLE_ANIMATABLE_CAP = new ResourceLocation(YesSteveModel.MOD_ID, "vehicle_animatable");
-    private static final ResourceLocation CLIENT_LAZY_CAP = new ResourceLocation(YesSteveModel.MOD_ID, "client_lazy");
+    private static final Identifier MODEL_INFO_CAP = Identifier.fromNamespaceAndPath(YesSteveModel.MOD_ID, "model_id");
+    private static final Identifier PROJECTILE_MODEL_INFO_CAP = Identifier.fromNamespaceAndPath(YesSteveModel.MOD_ID, "projectile_model_id");
+    private static final Identifier VEHICLE_MODEL_INFO_CAP = Identifier.fromNamespaceAndPath(YesSteveModel.MOD_ID, "vehicle_model_id");
+    private static final Identifier AUTH_MODELS_CAP = Identifier.fromNamespaceAndPath(YesSteveModel.MOD_ID, "own_models");
+    private static final Identifier STAR_MODELS_CAP = Identifier.fromNamespaceAndPath(YesSteveModel.MOD_ID, "star_models");
+    private static final Identifier ANIMATABLE_CAP = Identifier.fromNamespaceAndPath(YesSteveModel.MOD_ID, "animatable");
+    private static final Identifier PROJECTILE_ANIMATABLE_CAP = Identifier.fromNamespaceAndPath(YesSteveModel.MOD_ID, "projectile_animatable");
+    private static final Identifier VEHICLE_ANIMATABLE_CAP = Identifier.fromNamespaceAndPath(YesSteveModel.MOD_ID, "vehicle_animatable");
+    private static final Identifier CLIENT_LAZY_CAP = Identifier.fromNamespaceAndPath(YesSteveModel.MOD_ID, "client_lazy");
 
     @SubscribeEvent
     @SuppressWarnings("resource")

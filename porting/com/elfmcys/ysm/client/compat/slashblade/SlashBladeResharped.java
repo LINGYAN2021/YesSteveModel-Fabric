@@ -4,7 +4,7 @@ import com.google.common.collect.Maps;
 import mods.flammpfeil.slashblade.capability.slashblade.ISlashBladeState;
 import mods.flammpfeil.slashblade.registry.ComboStateRegistry;
 import mods.flammpfeil.slashblade.registry.combo.ComboState;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
 import org.apache.commons.lang3.StringUtils;
 
@@ -22,7 +22,7 @@ public class SlashBladeResharped {
     }
 
     static String getResharpedComboStateName(ISlashBladeState bladeState, long time, LivingEntity entity) {
-        ResourceLocation id = bladeState.getComboSeq();
+        Identifier id = bladeState.getComboSeq();
         ComboState comboSeq = ComboStateRegistry.REGISTRY.get().getValue(id);
         if (comboSeq == null) {
             return StringUtils.EMPTY;

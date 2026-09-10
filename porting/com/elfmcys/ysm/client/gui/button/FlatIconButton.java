@@ -3,10 +3,10 @@ package com.elfmcys.ysm.client.gui.button;
 import com.elfmcys.ysm.YesSteveModel;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class FlatIconButton extends FlatColorButton {
-    private final static ResourceLocation ICON = new ResourceLocation(YesSteveModel.MOD_ID, "texture/icon.png");
+    private final static Identifier ICON = Identifier.fromNamespaceAndPath(YesSteveModel.MOD_ID, "texture/icon.png");
     private final int textureX;
     private final int textureY;
 

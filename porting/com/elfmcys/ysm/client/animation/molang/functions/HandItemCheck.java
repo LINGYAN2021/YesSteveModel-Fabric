@@ -5,7 +5,7 @@ import com.elfmcys.ysm.geckolib3.core.molang.context.IContext;
 import com.elfmcys.ysm.geckolib3.core.molang.function.entity.LivingEntityFunction;
 import com.elfmcys.ysm.geckolib3.util.MolangUtils;
 import com.elfmcys.ysm.molang.runtime.ExecutionContext;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -72,7 +72,7 @@ public class HandItemCheck extends LivingEntityFunction {
 
         String subInput = input.substring(1);
         if (input.startsWith(ID_PREFIX)) {
-            ResourceLocation registryName = ForgeRegistries.ITEMS.getKey(item.getItem());
+            Identifier registryName = ForgeRegistries.ITEMS.getKey(item.getItem());
             if (registryName == null) {
                 return FALSE;
             }
@@ -85,7 +85,7 @@ public class HandItemCheck extends LivingEntityFunction {
             if (tags == null) {
                 return FALSE;
             }
-            ResourceLocation tag = new ResourceLocation(subInput);
+            Identifier tag = Identifier.parse(subInput);
             TagKey<Item> tagKey = tags.createTagKey(tag);
             return item.is(tagKey) ? TRUE : FALSE;
         }
