@@ -2,7 +2,7 @@ package com.elfmcys.ysm.geckolib3.core.molang.function.entity;
 
 import com.elfmcys.ysm.geckolib3.core.molang.context.IContext;
 import com.elfmcys.ysm.geckolib3.core.molang.function.ContextFunction;
-import net.minecraft.world.entity.projectile.Arrow;
+import net.minecraft.world.entity.projectile.arrow.Arrow;
 
 public abstract class ArrowEntityFunction extends ContextFunction<Arrow> {
     @Override

@@ -1,7 +1,7 @@
 package com.elfmcys.ysm.geckolib3.geo;
 
-import net.minecraft.Util;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.util.Util;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 

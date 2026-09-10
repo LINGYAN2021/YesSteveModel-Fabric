@@ -2,7 +2,7 @@ package com.elfmcys.ysm.util;
 
 import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.ItemUseAnimation;
 import org.apache.commons.lang3.EnumUtils;
 
 import java.util.Arrays;

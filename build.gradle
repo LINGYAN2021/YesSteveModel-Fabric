@@ -115,10 +115,8 @@ dependencies {
 
     compileOnly files(relocateProcessorAsmTask.flatMap { it.archiveFile })
 
-    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
-    // Fabric Loader 内置 MixinExtras，无需打包
+    // 26.x 无混淆，Mixin AP 无法定位映射且非必需；运行时再校验 mixin 目标
     compileOnly 'io.github.llamalad7:mixinextras-common:0.3.6'
-    annotationProcessor 'io.github.llamalad7:mixinextras-common:0.3.6'
 
     compileOnly 'org.jetbrains:annotations:26.0.1'
 

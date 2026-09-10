@@ -5,7 +5,7 @@ import com.elfmcys.ysm.geckolib3.model.AnimatableEntity;
 import com.elfmcys.ysm.natives.render.NativeRenderer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
