@@ -7,7 +7,7 @@ import com.elfmcys.ysm.event.CommandRegistry;
 import com.elfmcys.ysm.model.source.AccessPolicy;
 import com.elfmcys.ysm.model.server.ServerModelService;
 import com.elfmcys.ysm.network.NetworkHandler;
-import com.elfmcys.ysm.network.forge.ControlHandler;
+import com.elfmcys.ysm.network.fabric.ControlHandler;
 import com.elfmcys.ysm.util.CommandUtil;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.StringArgumentType;

@@ -2,7 +2,7 @@ package com.elfmcys.ysm.command.sub;
 
 import com.elfmcys.ysm.YesSteveModel;
 import com.elfmcys.ysm.network.NetworkHandler;
-import com.elfmcys.ysm.network.forge.HandshakeHandler;
+import com.elfmcys.ysm.network.fabric.HandshakeHandler;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;

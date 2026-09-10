@@ -1,7 +1,7 @@
 package com.elfmcys.ysm.capability;
 
 import com.elfmcys.ysm.event.LivingShieldBlockEvent;
-import com.elfmcys.ysm.network.forge.PlayerStateHandler;
+import com.elfmcys.ysm.network.fabric.PlayerStateHandler;
 import com.elfmcys.ysm.proto.network.protocol.v0.CommonV0;
 import com.elfmcys.ysm.proto.network.protocol.v0.PlayerStateV0;
 import com.elfmcys.ysm.util.TokenBucket;

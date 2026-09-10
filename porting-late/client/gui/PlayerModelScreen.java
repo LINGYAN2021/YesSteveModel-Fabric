@@ -21,7 +21,7 @@ import com.elfmcys.ysm.config.ServerConfig;
 import com.elfmcys.ysm.model.domain.Hash256;
 import com.elfmcys.ysm.model.source.PackOffer;
 import com.elfmcys.ysm.network.NetworkHandler;
-import com.elfmcys.ysm.network.forge.ClientProtocolGateway;
+import com.elfmcys.ysm.network.fabric.ClientProtocolGateway;
 import com.elfmcys.ysm.task.TaskScope;
 import com.elfmcys.ysm.util.ModelIdUtil;
 import com.mojang.blaze3d.platform.Window;

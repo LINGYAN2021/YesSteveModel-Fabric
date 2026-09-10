@@ -3,7 +3,7 @@ package com.elfmcys.ysm.client.event;
 import com.elfmcys.ysm.YesSteveModel;
 import com.elfmcys.ysm.capability.PlayerAnimatableCapabilityProvider;
 import com.elfmcys.ysm.network.NetworkHandler;
-import com.elfmcys.ysm.network.forge.ClientProtocolGateway;
+import com.elfmcys.ysm.network.fabric.ClientProtocolGateway;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;

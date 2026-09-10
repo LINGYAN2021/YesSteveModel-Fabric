@@ -1,38 +1,28 @@
 package com.elfmcys.ysm.capability;
 
-import net.minecraft.core.Direction;
+import com.elfmcys.ysm.capability.fabric.EntityCapabilityHolder;
+import com.elfmcys.ysm.capability.fabric.YsmCapability;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.CapabilityToken;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.LazyOptional;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-@OnlyIn(Dist.CLIENT)
-public class ProjectileAnimatableCapabilityProvider implements ICapabilityProvider {
-    public static Capability<ProjectileAnimatableCapability> CAP = CapabilityManager.get(new CapabilityToken<>() {
-    });
-    private ProjectileAnimatableCapability instance;
-    private Projectile projectile;
+/**
+ * 收到网络包初始化前，getCapability 返回空
+ */
+@Environment(EnvType.CLIENT)
+public class ProjectileAnimatableCapabilityProvider {
+    public static final YsmCapability<ProjectileAnimatableCapability> CAP = YsmCapability.register(
+            "projectile_animatable",
+            entity -> null);
 
-    public ProjectileAnimatableCapabilityProvider(Projectile projectile) {
-        this.projectile = projectile;
+    private ProjectileAnimatableCapabilityProvider() {
     }
 
-    public ProjectileAnimatableCapability initialize() {
-        if (this.instance == null) {
-            this.instance = new ProjectileAnimatableCapability(projectile);
-            this.projectile = null;
+    public static ProjectileAnimatableCapability initialize(Projectile projectile) {
+        ProjectileAnimatableCapability existing = EntityCapabilityHolder.peek(projectile, CAP);
+        if (existing != null) {
+            return existing;
         }
-        return this.instance;
-    }
-
-    @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        return CAP.orEmpty(cap, instance == null ? LazyOptional.empty() : LazyOptional.of(() -> instance));
+        return EntityCapabilityHolder.put(projectile, CAP, new ProjectileAnimatableCapability(projectile));
     }
 }

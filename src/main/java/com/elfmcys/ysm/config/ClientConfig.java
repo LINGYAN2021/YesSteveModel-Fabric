@@ -1,0 +1,86 @@
+package com.elfmcys.ysm.config;
+
+import com.elfmcys.ysm.network.session.SessionMode;
+import com.elfmcys.ysm.config.spec.YsmConfigSpec;
+
+public class ClientConfig {
+    public static YsmConfigSpec.BooleanValue DISCLAIMER_SHOW;
+    public static YsmConfigSpec.BooleanValue PRINT_ANIMATION_ROULETTE_MSG;
+    public static YsmConfigSpec.BooleanValue DISABLE_SELF_MODEL;
+    public static YsmConfigSpec.BooleanValue DISABLE_OTHER_MODEL;
+    public static YsmConfigSpec.BooleanValue DISABLE_SELF_HANDS;
+    public static YsmConfigSpec.BooleanValue DISABLE_PROJECTILE_MODEL;
+    public static YsmConfigSpec.BooleanValue DISABLE_VEHICLE_MODEL;
+    public static YsmConfigSpec.BooleanValue DISABLE_EXTERNAL_FIRST_PERSON_ANIM;
+    public static YsmConfigSpec.BooleanValue USE_COMPATIBILITY_RENDERER;
+    public static YsmConfigSpec.DoubleValue SOUND_VOLUME;
+    public static YsmConfigSpec.BooleanValue SHOW_MODEL_ID_FIRST;
+    public static YsmConfigSpec.BooleanValue ENABLE_SOPHISTICATED_BACKPACK_COMPAT;
+    public static YsmConfigSpec.BooleanValue ENABLE_PARCOOL_COMPAT;
+    public static YsmConfigSpec.BooleanValue PIN_ALL_SESSION_MODELS;
+    public static YsmConfigSpec.EnumValue<SessionMode> NETWORK_SESSION_MODE;
+
+    public static YsmConfigSpec init() {
+        YsmConfigSpec.Builder builder = new YsmConfigSpec.Builder();
+        init(builder);
+        ExtraPlayerScreenConfig.init(builder);
+        LoadingStateScreenConfig.init(builder);
+        return builder.build();
+    }
+
+    public static void init(YsmConfigSpec.Builder builder) {
+        builder.push("general");
+
+        builder.comment("Whether to display disclaimer GUI");
+        DISCLAIMER_SHOW = builder.define("DisclaimerShow", true);
+
+        builder.comment("Whether to print animation roulette play message");
+        PRINT_ANIMATION_ROULETTE_MSG = builder.define("PrintAnimationRouletteMsg", false);
+
+        builder.comment("Prevents rendering of self player's model");
+        DISABLE_SELF_MODEL = builder.define("DisableSelfModel", false);
+
+        builder.comment("Prevents rendering of other player's model");
+        DISABLE_OTHER_MODEL = builder.define("DisableOtherModel", false);
+
+        builder.comment("Prevents rendering of self player's hand");
+        DISABLE_SELF_HANDS = builder.define("DisableSelfHands", false);
+
+        builder.comment("Prevents rendering of projectile model");
+        DISABLE_PROJECTILE_MODEL = builder.define("DisableProjectileModel", false);
+
+        builder.comment("Prevents rendering of vehicle model");
+        DISABLE_VEHICLE_MODEL = builder.define("DisableVehicleModel", false);
+
+        builder.comment("Disable first person animation from other mods.");
+        DISABLE_EXTERNAL_FIRST_PERSON_ANIM = builder.define("DisableExternalFirstPersonAnim", false);
+
+        builder.comment("If rendering errors occur, try turning on this.");
+        USE_COMPATIBILITY_RENDERER = builder.define("UseCompatibilityRenderer", false);
+
+        builder.comment("The amount of volume when the animation is played.");
+        SOUND_VOLUME = builder.defineInRange("SoundVolume", 100.0, 0.0, 100.0);
+
+        builder.comment("Whether to display model ID first in the model selection screen, instead of the model name filled in by the model author.");
+        SHOW_MODEL_ID_FIRST = builder.define("ShowModelIdFirst", false);
+
+        builder.comment("Ignore the 50-model preload limit for the current server session.");
+        builder.comment("All locally available catalog models are loaded and pinned; server models are pinned after on-demand download.");
+        builder.comment("All non-builtin pinned data is released when leaving the server.");
+        PIN_ALL_SESSION_MODELS = builder.define("PinAllSessionModels", false);
+
+        builder.pop();
+
+        builder.push("network");
+        builder.comment("Selects the remote player-state session. AUTO prefers a compatible game server, then a backend.");
+        builder.comment("BACKEND never joins the game-server YSM session. LOCAL_ONLY disables remote player-state synchronization.");
+        builder.comment("Local and client-configured external model sources remain available in every mode.");
+        NETWORK_SESSION_MODE = builder.defineEnum("SessionMode", SessionMode.AUTO);
+        builder.pop();
+
+        builder.push("Integration");
+        ENABLE_SOPHISTICATED_BACKPACK_COMPAT = builder.define("SophisticatedBackpack", true);
+        ENABLE_PARCOOL_COMPAT = builder.define("Parcool", true);
+        builder.pop();
+    }
+}

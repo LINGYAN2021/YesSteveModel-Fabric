@@ -1,7 +1,7 @@
 package com.elfmcys.ysm.event;
 
 import com.elfmcys.ysm.YesSteveModel;
-import com.elfmcys.ysm.network.forge.HandshakeHandler;
+import com.elfmcys.ysm.network.fabric.HandshakeHandler;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;

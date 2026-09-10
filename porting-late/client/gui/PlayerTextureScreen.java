@@ -10,7 +10,7 @@ import com.elfmcys.ysm.client.model.ModelRenderTarget;
 import com.elfmcys.ysm.client.model.ClientModelService;
 import com.elfmcys.ysm.model.domain.Hash256;
 import com.elfmcys.ysm.network.NetworkHandler;
-import com.elfmcys.ysm.network.forge.ClientProtocolGateway;
+import com.elfmcys.ysm.network.fabric.ClientProtocolGateway;
 import com.elfmcys.ysm.task.TaskScope;
 import com.elfmcys.ysm.util.RenderUtil;
 import com.google.common.collect.Lists;

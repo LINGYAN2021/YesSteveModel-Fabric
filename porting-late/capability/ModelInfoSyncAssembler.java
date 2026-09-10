@@ -1,7 +1,7 @@
 package com.elfmcys.ysm.capability;
 
 import com.elfmcys.ysm.model.catalog.ServerCatalogSnapshot;
-import com.elfmcys.ysm.network.forge.PlayerStateHandler;
+import com.elfmcys.ysm.network.fabric.PlayerStateHandler;
 import com.elfmcys.ysm.network.protocol.ModelReferenceCodec;
 import com.elfmcys.ysm.model.catalog.CatalogRootKind;
 import com.elfmcys.ysm.proto.network.protocol.v0.CommonV0;

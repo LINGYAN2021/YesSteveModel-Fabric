@@ -21,7 +21,7 @@ import com.elfmcys.ysm.info.roulette.forms.RadioForms;
 import com.elfmcys.ysm.info.roulette.forms.RangeForms;
 import com.elfmcys.ysm.molang.parser.ParseException;
 import com.elfmcys.ysm.network.NetworkHandler;
-import com.elfmcys.ysm.network.forge.ClientProtocolGateway;
+import com.elfmcys.ysm.network.fabric.ClientProtocolGateway;
 import com.elfmcys.ysm.util.FifoHashMap;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.InputConstants;

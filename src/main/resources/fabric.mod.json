@@ -28,6 +28,13 @@
   "mixins": [
     "ysm.mixins.json"
   ],
+  "custom": {
+    "fabric:injected_interfaces": {
+      "net.minecraft.world.entity.Entity": [
+        "com.elfmcys.ysm.capability.fabric.EntityCapabilityHolder"
+      ]
+    }
+  },
   "depends": {
     "fabricloader": ">=0.17.0",
     "fabric-api": "*",

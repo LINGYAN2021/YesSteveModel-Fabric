@@ -5,7 +5,7 @@ import com.elfmcys.ysm.capability.PlayerAnimatableCapabilityProvider;
 import com.elfmcys.ysm.client.model.ClientModelService;
 import com.elfmcys.ysm.client.sound.decoder.DecoderManager;
 import com.elfmcys.ysm.client.texture.CustomTextureManager;
-import com.elfmcys.ysm.network.forge.ClientProtocolGateway;
+import com.elfmcys.ysm.network.fabric.ClientProtocolGateway;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.TickEvent;

@@ -3,7 +3,7 @@ package com.elfmcys.ysm.client.event;
 import com.elfmcys.ysm.YesSteveModel;
 import com.elfmcys.ysm.client.model.ClientModelService;
 import com.elfmcys.ysm.network.NetworkHandler;
-import com.elfmcys.ysm.network.forge.ClientSessionRuntime;
+import com.elfmcys.ysm.network.fabric.ClientSessionRuntime;
 import com.elfmcys.ysm.network.session.ActiveSessionMode;
 import com.elfmcys.ysm.network.session.SessionMode;
 import net.minecraft.client.Minecraft;

@@ -8,7 +8,7 @@ import com.elfmcys.ysm.geckolib3.core.molang.value.IValue;
 import com.elfmcys.ysm.geckolib3.geo.RenderContext;
 import com.elfmcys.ysm.molang.runtime.Struct;
 import com.elfmcys.ysm.network.NetworkHandler;
-import com.elfmcys.ysm.network.forge.ClientProtocolGateway;
+import com.elfmcys.ysm.network.fabric.ClientProtocolGateway;
 import it.unimi.dsi.fastutil.floats.FloatArrayList;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;

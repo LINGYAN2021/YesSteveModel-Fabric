@@ -5,7 +5,7 @@ import com.elfmcys.ysm.capability.PlayerAnimatableCapabilityProvider;
 import com.elfmcys.ysm.client.event.PlayerMoveEvent;
 import com.elfmcys.ysm.client.gui.AnimationRouletteScreen;
 import com.elfmcys.ysm.info.ModelProperties;
-import com.elfmcys.ysm.network.forge.ClientProtocolGateway;
+import com.elfmcys.ysm.network.fabric.ClientProtocolGateway;
 import com.elfmcys.ysm.util.InputCheckUtil;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.InputConstants;

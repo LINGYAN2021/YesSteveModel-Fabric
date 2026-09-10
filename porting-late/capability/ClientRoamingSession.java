@@ -4,7 +4,7 @@ import com.elfmcys.ysm.client.animation.molang.roaming.LocalRoamingStruct;
 import com.elfmcys.ysm.client.animation.molang.roaming.RemoteRoamingStruct;
 import com.elfmcys.ysm.geckolib3.core.molang.util.StringPool;
 import com.elfmcys.ysm.molang.runtime.Struct;
-import com.elfmcys.ysm.network.forge.ClientProtocolGateway;
+import com.elfmcys.ysm.network.fabric.ClientProtocolGateway;
 import it.unimi.dsi.fastutil.ints.Int2FloatMap;
 import it.unimi.dsi.fastutil.ints.Int2FloatMaps;
 import it.unimi.dsi.fastutil.ints.Int2FloatOpenHashMap;

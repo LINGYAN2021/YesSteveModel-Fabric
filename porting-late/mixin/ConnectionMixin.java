@@ -1,6 +1,6 @@
 package com.elfmcys.ysm.mixin;
 
-import com.elfmcys.ysm.network.forge.YsmPacketCompressionBypass;
+import com.elfmcys.ysm.network.fabric.YsmPacketCompressionBypass;
 import io.netty.channel.Channel;
 import net.minecraft.network.CompressionEncoder;
 import net.minecraft.network.Connection;
