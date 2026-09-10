@@ -53,25 +53,30 @@ def nativeLibraryPath = providers.provider {
         return resourcePath.toString()
     }
 
-    throw new GradleException(
-            "YSM native library is not configured. Set ${ysmNativeEnvironment}, " +
-                    "set ${ysmNativeProperty} in ${localPropertiesFile.name}, " +
-                    "or provide ${resourcePath}.")
+    // 原生库未就绪时不阻塞构建：仅警告，运行时由 NativeLibUtil 降级处理
+    logger.warn("YSM native library is not configured. Set ${ysmNativeEnvironment}, " +
+            "set ${ysmNativeProperty} in ${localPropertiesFile.name}, " +
+            "or provide ${resourcePath}. Native features will be unavailable.")
+    return ''
 }
 
 ext.ysmNativeLibraryPath = nativeLibraryPath
-def nativeLibraryFile = layout.file(nativeLibraryPath.map { path -> new File(path) })
-ext.ysmNativeLibraryFile = nativeLibraryFile
 
-legacyForge.runs.configureEach {
-    environment.put(ysmNativeEnvironment, nativeLibraryPath)
-}
+// 原生库路径在配置期解析一次（廉价的环境变量/文件检查），未配置时跳过运行环境注入
+def resolvedNativeLibraryPath = nativeLibraryPath.get()
+ext.ysmNativeLibraryFile = resolvedNativeLibraryPath.isBlank() ? null : new File(resolvedNativeLibraryPath)
 
-tasks.withType(Test).configureEach {
-    inputs.file(nativeLibraryFile)
-            .withPropertyName('ysmNativeLibrary')
-            .withPathSensitivity(PathSensitivity.NONE)
-    doFirst {
-        environment ysmNativeEnvironment, nativeLibraryPath.get()
+if (!resolvedNativeLibraryPath.isBlank()) {
+    loom.runs.configureEach {
+        environmentVariable ysmNativeEnvironment, resolvedNativeLibraryPath
+    }
+
+    tasks.withType(Test).configureEach {
+        inputs.file(resolvedNativeLibraryPath)
+                .withPropertyName('ysmNativeLibrary')
+                .withPathSensitivity(PathSensitivity.NONE)
+        doFirst {
+            environment ysmNativeEnvironment, resolvedNativeLibraryPath
+        }
     }
 }

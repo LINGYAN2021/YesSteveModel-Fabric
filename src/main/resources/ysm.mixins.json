@@ -2,32 +2,13 @@
   "required": true,
   "minVersion": "0.8",
   "package": "com.elfmcys.ysm.mixin",
-  "plugin": "com.elfmcys.ysm.mixin.plugin.MixinTweaker",
-  "compatibilityLevel": "JAVA_17",
+  "compatibilityLevel": "JAVA_25",
   "refmap": "ysm.refmap.json",
   "injectors": {
     "defaultRequire": 1
   },
   "client": [
-    "client.ArrowEntityAccessor",
-    "client.BufferBuilderMixin",
-    "client.BufferSourceMixin",
-    "client.EntityRenderDispatcherMixin",
-    "client.FishingHookAccessor",
-    "client.GameRendererMixin",
-    "client.InventoryScreenMixin",
-    "client.LivingEntityAccessor",
-    "client.LivingRendererMixin",
-    "client.NativeImageAccessor",
-    "client.PauseScreenMixin",
-    "client.ThrowableItemProjectileAccessor",
-    "client.LevelRendererMixin",
-    "client.embeddium.SodiumBufferBuilderMixin"
   ],
   "mixins": [
-    "AbstractArrowEntityMixin",
-    "ConnectionMixin",
-    "ProjectileEntityMixin",
-    "ServerPlayerMixin"
   ]
 }

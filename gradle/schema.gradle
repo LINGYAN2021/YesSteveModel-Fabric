@@ -39,7 +39,3 @@ sourceSets.main.java {
 tasks.named('compileJava') {
     dependsOn tasks.named('generateSchemaSources')
 }
-
-idea.project.settings.taskTriggers {
-    afterSync tasks.named('generateSchemaSources')
-}
