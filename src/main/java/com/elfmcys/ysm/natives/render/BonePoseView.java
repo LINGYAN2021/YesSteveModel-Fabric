@@ -1,6 +1,6 @@
 package com.elfmcys.ysm.natives.render;
 
-import net.minecraft.client.renderer.LightTexture;
+
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.lwjgl.system.MemoryUtil;
@@ -75,9 +75,13 @@ public final class BonePoseView {
         return light == 0xFF ? -1 : light;
     }
 
+    private static int packLightmap(int light) {
+        return light | (light << 16);
+    }
+
     public int getLightmapUv(int boneIndex) {
         var light = getLightLevel(boneIndex);
-        return light == -1 ? -1 : LightTexture.pack(light, light);
+        return light == -1 ? -1 : packLightmap(light);
     }
 
     private int offset(int boneIndex) {

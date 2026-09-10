@@ -14,8 +14,8 @@ public class EnumUtil {
     private final static Object2ReferenceOpenHashMap<String, EquipmentSlot> EQUIPMENT_SLOTS =
             new Object2ReferenceOpenHashMap<>(Arrays.stream(EquipmentSlot.values()).collect(Collectors.toMap(u -> u.getName().toLowerCase(Locale.US), u -> u)));
 
-    public static Optional<UseAnim> getUseAnim(String name) {
-        return Optional.ofNullable(EnumUtils.getEnum(UseAnim.class, name.toUpperCase(Locale.US)));
+    public static Optional<ItemUseAnimation> getUseAnim(String name) {
+        return Optional.ofNullable(EnumUtils.getEnum(ItemUseAnimation.class, name.toUpperCase(Locale.US)));
     }
 
     public static Optional<EquipmentSlot> getEquipmentSlot(String name) {

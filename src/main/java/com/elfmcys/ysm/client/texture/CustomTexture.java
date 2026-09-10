@@ -4,8 +4,9 @@ import com.elfmcys.ysm.YesSteveModel;
 import com.elfmcys.ysm.client.model.ModelResourceFailureGate;
 import com.elfmcys.ysm.natives.image.ImageSource;
 import com.mojang.blaze3d.platform.NativeImage;
-import com.mojang.blaze3d.platform.TextureUtil;
+import com.mojang.blaze3d.systems.GpuDevice;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.textures.TextureFormat;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.server.packs.resources.ResourceManager;
 
@@ -33,7 +34,7 @@ public class CustomTexture extends AbstractTexture {
         this.failureGate = Objects.requireNonNull(failureGate, "failureGate");
     }
 
-    @Override
+    // 26.1.2 的 AbstractTexture 不再有 load 回调；由 YSM 自身逻辑调用
     public void load(ResourceManager resourceManager) {
         if (failureGate.failure().isPresent()) {
             return;
@@ -85,7 +86,7 @@ public class CustomTexture extends AbstractTexture {
             return;
         }
         try {
-            RenderSystem.recordRenderCall(() -> upload(generation, pixels));
+            RenderSystem.queueFencedTask(() -> upload(generation, pixels));
         } catch (RuntimeException error) {
             pixels.close();
             throw error;
@@ -107,10 +108,16 @@ public class CustomTexture extends AbstractTexture {
     }
 
     private void doUpload(NativeImage img) {
-        TextureUtil.prepareImage(this.getId(), 0, img.getWidth(), img.getHeight());
-        img.upload(0, 0, 0, 0, 0,
-                img.getWidth(), img.getHeight(),
-                false, false, false, false);
+        GpuDevice device = RenderSystem.getDevice();
+        if (this.texture != null) {
+            this.texture.close();
+        }
+        if (this.textureView != null) {
+            this.textureView.close();
+        }
+        this.texture = device.createTexture("YSM Custom Texture", 5, TextureFormat.RGBA8, img.getWidth(), img.getHeight(), 1, 1);
+        this.textureView = device.createTextureView(this.texture);
+        device.createCommandEncoder().writeToTexture(this.texture, img);
     }
 
     public Optional<Throwable> failure() {

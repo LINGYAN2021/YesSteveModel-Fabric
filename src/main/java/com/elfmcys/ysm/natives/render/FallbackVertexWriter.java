@@ -42,21 +42,15 @@ class FallbackVertexWriter {
                 var normalY = (byte) ((normal >> 8) & 0xFF) * 127;
                 var normalZ = (byte) ((normal & 0xFF)) * 127;
 
-                vertexBuffer.vertex(
-                        vertexData[offset + INDEX_X],
-                        vertexData[offset + INDEX_Y],
-                        vertexData[offset + INDEX_Z],
-                        r,
-                        g,
-                        b,
-                        a,
-                        vertexData[offset + INDEX_TEX_U],
-                        vertexData[offset + INDEX_TEX_V],
-                        overlayUv,
-                        Float.floatToRawIntBits(vertexData[offset + INDEX_LIGHT]),
-                        normalX,
-                        normalY,
-                        normalZ);
+                vertexBuffer.addVertex(
+                                vertexData[offset + INDEX_X],
+                                vertexData[offset + INDEX_Y],
+                                vertexData[offset + INDEX_Z])
+                        .setColor(r, g, b, a)
+                        .setUv(vertexData[offset + INDEX_TEX_U], vertexData[offset + INDEX_TEX_V])
+                        .setOverlay(overlayUv)
+                        .setLight(Float.floatToRawIntBits(vertexData[offset + INDEX_LIGHT]))
+                        .setNormal(normalX, normalY, normalZ);
             }
         }
     }
