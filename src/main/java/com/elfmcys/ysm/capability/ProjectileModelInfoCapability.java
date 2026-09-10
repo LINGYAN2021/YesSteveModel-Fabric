@@ -50,16 +50,16 @@ public class ProjectileModelInfoCapability {
     public void deserializeNBT(CompoundTag nbt) {
         var stored = nbt.getString("owner_model_hash");
         try {
-            this.modelHash = stored.isEmpty() ? null : Hash256.parse(stored);
+            this.modelHash = stored.isEmpty() ? null : Hash256.parse(stored.get());
         } catch (IllegalArgumentException ignored) {
             this.modelHash = null;
         }
-        this.initialized = nbt.getBoolean("initialized");
+        this.initialized = nbt.getBooleanOr("initialized", false);
 
         this.molangVarsServerBound.clear();
-        var varsTag = nbt.getCompound("molang_vars_server_bound");
-        for (var name : varsTag.getAllKeys()) {
-            var value = varsTag.getFloat(name);
+        var varsTag = nbt.getCompoundOrEmpty("molang_vars_server_bound");
+        for (var name : varsTag.keySet()) {
+            var value = varsTag.getFloatOr(name, 0f);
             this.molangVarsServerBound.put(name, value);
         }
     }

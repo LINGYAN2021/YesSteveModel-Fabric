@@ -51,7 +51,7 @@ public class AuthModelsCapability {
         this.authModels.clear();
         for (Tag tag : nbt) {
             try {
-                authModels.add(Hash256.parse(tag.getAsString()));
+                authModels.add(Hash256.parse(tag.asString().orElse("")));
             } catch (IllegalArgumentException ignored) {
                 // Old path-based authorization entries are intentionally not migrated.
             }

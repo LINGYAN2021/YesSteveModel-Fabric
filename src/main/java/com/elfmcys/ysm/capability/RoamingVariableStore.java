@@ -83,17 +83,17 @@ final class RoamingVariableStore {
 
     void deserialize(CompoundTag storageTag) {
         variables.clear();
-        for (var hashText : storageTag.getAllKeys()) {
+        for (var hashText : storageTag.keySet()) {
             final int roamingHash;
             try {
                 roamingHash = Integer.parseInt(hashText);
             } catch (NumberFormatException ignored) {
                 continue;
             }
-            var valuesTag = storageTag.getCompound(hashText);
+            var valuesTag = storageTag.getCompoundOrEmpty(hashText);
             var values = new Object2FloatOpenHashMap<String>(valuesTag.size());
-            for (var name : valuesTag.getAllKeys()) {
-                values.put(name, valuesTag.getFloat(name));
+            for (var name : valuesTag.keySet()) {
+                values.put(name, valuesTag.getFloatOr(name, 0f));
             }
             variables.put(roamingHash, values);
         }

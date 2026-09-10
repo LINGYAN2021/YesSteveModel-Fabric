@@ -51,7 +51,7 @@ public class StarModelsCapability {
         this.starModels.clear();
         for (Tag tag : nbt) {
             try {
-                starModels.add(Hash256.parse(tag.getAsString()));
+                starModels.add(Hash256.parse(tag.asString().orElse("")));
             } catch (IllegalArgumentException ignored) {
                 // Old path-based favorites are intentionally not migrated.
             }
