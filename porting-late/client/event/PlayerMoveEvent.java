@@ -7,7 +7,7 @@ import com.elfmcys.ysm.network.fabric.ClientProtocolGateway;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.ClientInput;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraftforge.api.distmarker.Dist;
+import net.fabricmc.api.EnvType;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -16,7 +16,7 @@ import org.lwjgl.glfw.GLFW;
 
 import static com.elfmcys.ysm.client.input.AnimationRouletteKey.LOCK_ROULETTE_KEY;
 
-@Mod.EventBusSubscriber(value = Dist.CLIENT)
+@Mod.EventBusSubscriber(value = EnvType.CLIENT)
 public class PlayerMoveEvent {
     private static boolean LOCK_EXTRA_ANIMATION = false;
 

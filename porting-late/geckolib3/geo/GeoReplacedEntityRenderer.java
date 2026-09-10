@@ -51,7 +51,7 @@ public abstract class GeoReplacedEntityRenderer<TEntity extends LivingEntity, T 
 
     public void renderAnimatableEntity(T animatableEntity, @Nullable Identifier textureOverride, float entityYaw, float partialTick,
                                        PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
-        if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.RenderLivingEvent.Pre<>(animatableEntity.getEntity(), this, partialTick, poseStack, bufferSource, packedLight)))
+        if (net.minecraftforge.common.YsmEventBus.post(new net.minecraftforge.client.event.RenderLivingEvent.Pre<>(animatableEntity.getEntity(), this, partialTick, poseStack, bufferSource, packedLight)))
             return;
         final TEntity entity = animatableEntity.getEntity();
         var mc = Minecraft.getInstance();
@@ -126,7 +126,7 @@ public abstract class GeoReplacedEntityRenderer<TEntity extends LivingEntity, T 
         }
 
         ((ILivingRenderer) this).ysm$renderNameTag(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);
-        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.RenderLivingEvent.Post<>(entity, this, partialTick, poseStack, bufferSource, packedLight));
+        net.minecraftforge.common.YsmEventBus.post(new net.minecraftforge.client.event.RenderLivingEvent.Post<>(entity, this, partialTick, poseStack, bufferSource, packedLight));
     }
 
     protected void renderLayer(PoseStack poseStack, MultiBufferSource buffer, T animatable, GeoRenderData renderData, int packedLight, int overlay) {

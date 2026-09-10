@@ -13,18 +13,14 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.synchronization.SuggestionProviders;
 import net.minecraft.resources.Identifier;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.loader.api.FabricLoader;
 
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Mod.EventBusSubscriber
-@SuppressWarnings("removal")
 public final class CommandRegistry {
     public static final SuggestionProvider<CommandSourceStack> ALL_MODELS = SuggestionProviders.register(Identifier.fromNamespaceAndPath(YesSteveModel.MOD_ID, "models"), (source, builder) -> {
         if (source.getSource() instanceof SharedSuggestionProvider) {
@@ -40,7 +36,7 @@ public final class CommandRegistry {
 
     public static final SuggestionProvider<CommandSourceStack> ALL_ANIMATIONS = SuggestionProviders.register(Identifier.fromNamespaceAndPath(YesSteveModel.MOD_ID, "animations"), (source, builder) -> {
         if (source.getSource() instanceof SharedSuggestionProvider) {
-            if (FMLEnvironment.dist == Dist.DEDICATED_SERVER) {
+            if (FabricLoader.getInstance().getEnvironmentType() == EnvType.SERVER) {
                 // Fixme: 应该为服务器后台也添加提示功能
                 return Suggestions.empty();
             } else {
@@ -71,17 +67,17 @@ public final class CommandRegistry {
         return Suggestions.empty();
     });
 
-    @SubscribeEvent
-    public static void onServerStaring(RegisterCommandsEvent event) {
-        if (!YesSteveModel.isAvailable()) {
-            RootCommand.registerPlaceholder(event.getDispatcher());
-            return;
-        }
-
-        RootCommand.register(event.getDispatcher());
-        if (FMLEnvironment.dist == Dist.CLIENT) {
-            ClientRootCommand.register(event.getDispatcher());
-        }
+    public static void register() {
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
+            if (!YesSteveModel.isAvailable()) {
+                RootCommand.registerPlaceholder(dispatcher);
+                return;
+            }
+            RootCommand.register(dispatcher);
+            if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
+                ClientRootCommand.register(dispatcher);
+            }
+        });
     }
 
     private static String filterSuggestionStr(String str) {

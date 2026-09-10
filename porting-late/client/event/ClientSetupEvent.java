@@ -37,7 +37,7 @@ import com.elfmcys.ysm.client.input.PlayerModelScreenKey;
 import com.elfmcys.ysm.client.model.PlayerLocator;
 import com.elfmcys.ysm.client.model.ClientModelService;
 import com.elfmcys.ysm.config.ClientConfig;
-import net.minecraftforge.api.distmarker.Dist;
+import net.fabricmc.api.EnvType;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -53,7 +53,7 @@ import java.util.Optional;
 
 import static net.minecraftforge.client.gui.overlay.VanillaGuiOverlay.DEBUG_TEXT;
 
-@Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
+@Mod.EventBusSubscriber(value = EnvType.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ClientSetupEvent {
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {

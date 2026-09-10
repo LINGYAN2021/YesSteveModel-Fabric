@@ -6,8 +6,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.network.chat.Component;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
 import org.jetbrains.annotations.Nullable;
@@ -21,7 +21,7 @@ public class CommandUtil {
 
     // 是否为单人模式，或联机模式下的房主
     public static boolean isLocalPlayer(Entity player) {
-        return player != null && FMLEnvironment.dist == Dist.CLIENT && player.getUUID().equals(Minecraft.getInstance().getUser().getGameProfile().getId());
+        return player != null && FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT && player.getUUID().equals(Minecraft.getInstance().getUser().getGameProfile().getId());
     }
 
     public static boolean hasPermission(@Nullable Entity source, int level) {

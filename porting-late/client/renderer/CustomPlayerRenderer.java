@@ -26,7 +26,7 @@ import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.Score;
 import net.minecraft.world.scores.Scoreboard;
 import net.minecraft.world.scores.Team;
-import net.minecraftforge.common.MinecraftForge;
+import com.elfmcys.ysm.event.bus.YsmEventBus;
 import org.jetbrains.annotations.NotNull;
 
 public class CustomPlayerRenderer extends GeoReplacedEntityRenderer<Player, CustomPlayerEntity> {
@@ -57,7 +57,7 @@ public class CustomPlayerRenderer extends GeoReplacedEntityRenderer<Player, Cust
         cap.checkModelUpdate();
         var event = new SpecialPlayerRenderEvent(player, cap, cap.getModelId());
         textureOverride = event.getTextureLocationOverride();
-        if (MinecraftForge.EVENT_BUS.post(event)) {
+        if (YsmEventBus.post(event)) {
             return;
         }
 

@@ -4,8 +4,8 @@ import com.elfmcys.ysm.client.compat.create.CreateCompat;
 import com.elfmcys.ysm.client.compat.parcool.ParCoolCompat;
 import com.elfmcys.ysm.util.Keep;
 import com.google.common.collect.Lists;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.loader.api.FabricLoader;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -44,7 +44,7 @@ public class MixinTweaker implements IMixinConfigPlugin {
     @Keep
     @Override
     public List<String> getMixins() {
-        if (FMLEnvironment.dist == Dist.CLIENT) {
+        if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
             List<String> list = Lists.newArrayList();
 
             if (ParCoolCompat.isInstalled()) {

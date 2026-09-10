@@ -9,7 +9,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.resources.Identifier;
 
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 public class RelativeBlockHasAnyTag extends EntityFunction {
     @Override
@@ -24,7 +24,7 @@ public class RelativeBlockHasAnyTag extends EntityFunction {
                 return null;
             }
 
-            TagKey<Block> tag = ForgeRegistries.BLOCKS.tags().createTagKey(tagId);
+            TagKey<Block> tag = BuiltInRegistries.BLOCK.tags().createTagKey(tagId);
             if (block.is(tag)) {
                 return true;
             }

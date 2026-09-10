@@ -9,9 +9,9 @@ import com.elfmcys.ysm.model.domain.ModelPath;
 import com.elfmcys.ysm.model.storage.ModelFileHandle;
 import com.elfmcys.ysm.model.storage.ModelStorageInfrastructure;
 import com.elfmcys.ysm.model.storage.SharedCachePaths;
-import net.minecraftforge.fml.loading.FMLPaths;
-import net.minecraftforge.fml.loading.FMLEnvironment;
-import net.minecraftforge.api.distmarker.Dist;
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.api.EnvType;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -81,7 +81,7 @@ public final class BuiltinModelCatalog implements AutoCloseable {
     public static BuiltinModelCatalog open(ModelStorageInfrastructure storage,
                                            BuiltinModelIndex contract) {
         var catalog = new BuiltinModelCatalog(storage, contract);
-        if (FMLEnvironment.dist != Dist.DEDICATED_SERVER) {
+        if (FabricLoader.getInstance().getEnvironmentType() != EnvType.SERVER) {
             return catalog;
         }
         try {
@@ -162,7 +162,7 @@ public final class BuiltinModelCatalog implements AutoCloseable {
     }
 
     private static void refreshExamples(Path builtinRoot) {
-        refreshExamples(builtinRoot, FMLPaths.GAMEDIR.get().resolve(YesSteveModel.MOD_ID));
+        refreshExamples(builtinRoot, FabricLoader.getInstance().getGameDir().resolve(YesSteveModel.MOD_ID));
     }
 
     static void refreshExamples(Path builtinRoot, Path config) {

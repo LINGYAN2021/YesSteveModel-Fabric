@@ -11,7 +11,7 @@ import net.minecraft.world.entity.projectile.arrow.Arrow;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.resources.Identifier;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 public class EffectLevel extends ContextFunction<Entity> {
     @Override
@@ -28,7 +28,7 @@ public class EffectLevel extends ContextFunction<Entity> {
                 continue;
             }
 
-            MobEffect effect = ForgeRegistries.MOB_EFFECTS.getValue(effectId);
+            MobEffect effect = BuiltInRegistries.MOB_EFFECT.getValue(effectId);
             if (effect == null) {
                 continue;
             }

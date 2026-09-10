@@ -8,7 +8,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.resources.Identifier;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 public class DumpRelativeBlock extends EntityFunction {
     @Override
@@ -21,7 +21,7 @@ public class DumpRelativeBlock extends EntityFunction {
         if (block == null) {
             return null;
         }
-        Identifier blockId = ForgeRegistries.BLOCKS.getKey(block.getBlock());
+        Identifier blockId = BuiltInRegistries.BLOCK.getKey(block.getBlock());
         if (blockId == null) {
             return null;
         }

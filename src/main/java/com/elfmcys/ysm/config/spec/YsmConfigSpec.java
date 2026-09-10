@@ -161,7 +161,7 @@ public final class YsmConfigSpec {
             return defaultValue;
         }
 
-        void set(T value) {
+        public void set(T value) {
             this.value = value;
         }
 

@@ -14,7 +14,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.Identifier;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 
 public class DumpEquippedItem extends LivingEntityFunction {
@@ -34,7 +34,7 @@ public class DumpEquippedItem extends LivingEntityFunction {
             return null;
         }
 
-        Identifier id = ForgeRegistries.ITEMS.getKey(itemStack.getItem());
+        Identifier id = BuiltInRegistries.ITEM.getKey(itemStack.getItem());
         if (id == null) {
             return null;
         }
@@ -52,7 +52,7 @@ public class DumpEquippedItem extends LivingEntityFunction {
                 if (enchantmentId == null) {
                     continue;
                 }
-                Enchantment enchantment = ForgeRegistries.ENCHANTMENTS.getValue(enchantmentId);
+                Enchantment enchantment = BuiltInRegistries.ENCHANTMENT.getValue(enchantmentId);
                 if (enchantment == null) {
                     continue;
                 }

@@ -3,7 +3,7 @@ package com.elfmcys.ysm.client.animation.molang.functions;
 import com.elfmcys.ysm.molang.runtime.ExecutionContext;
 import com.elfmcys.ysm.molang.runtime.Function;
 import net.minecraftforge.common.util.MavenVersionStringHelper;
-import net.minecraftforge.fml.ModList;
+import net.fabricmc.loader.api.FabricLoader;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

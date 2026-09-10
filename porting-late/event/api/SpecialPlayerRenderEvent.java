@@ -3,12 +3,12 @@ package com.elfmcys.ysm.event.api;
 import com.elfmcys.ysm.client.entity.CustomPlayerEntity;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
+import com.elfmcys.ysm.event.bus.YsmCancelable;
+import com.elfmcys.ysm.event.bus.YsmEvent;
 import org.jetbrains.annotations.Nullable;
 
-@Cancelable
-public class SpecialPlayerRenderEvent extends Event {
+@YsmCancelable
+public class SpecialPlayerRenderEvent extends YsmEvent {
     private final Player player;
     private final CustomPlayerEntity customPlayer;
     private final String modelId;

@@ -25,7 +25,7 @@ public class CustomFirstPersonArmRenderer {
 //        }
 //
 //        var renderEvent = new SpecialPlayerRenderEvent(player, cap, cap.getModelId());
-//        if (MinecraftForge.EVENT_BUS.post(renderEvent)) {
+//        if (YsmEventBus.post(renderEvent)) {
 //            return;
 //        }
 //

@@ -9,7 +9,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 
 import net.minecraft.world.level.biome.Biome;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 public class BiomeHasAllTags extends EntityFunction {
     @Override
@@ -22,7 +22,7 @@ public class BiomeHasAllTags extends EntityFunction {
             if (id == null) {
                 return null;
             }
-            TagKey<Biome> tag = ForgeRegistries.BIOMES.tags().createTagKey(id);
+            TagKey<Biome> tag = BuiltInRegistries.BIOME.tags().createTagKey(id);
             if (!biome.is(tag)) {
                 return false;
             }

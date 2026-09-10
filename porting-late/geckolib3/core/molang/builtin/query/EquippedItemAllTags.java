@@ -12,7 +12,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.resources.Identifier;
 
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 public class EquippedItemAllTags extends LivingEntityFunction {
     @Override
@@ -32,7 +32,7 @@ public class EquippedItemAllTags extends LivingEntityFunction {
             if (id == null) {
                 return null;
             }
-            TagKey<Item> tag = ForgeRegistries.ITEMS.tags().createTagKey(id);
+            TagKey<Item> tag = BuiltInRegistries.ITEM.tags().createTagKey(id);
             if (!itemStack.is(tag)) {
                 return false;
             }

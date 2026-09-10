@@ -6,7 +6,7 @@ import com.elfmcys.ysm.geckolib3.util.MolangUtils;
 import com.elfmcys.ysm.molang.runtime.ExecutionContext;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 public class RelativeBlockNameAny extends EntityFunction {
     @Override
@@ -15,7 +15,7 @@ public class RelativeBlockNameAny extends EntityFunction {
         if (block == null) {
             return null;
         }
-        Identifier blockId = ForgeRegistries.BLOCKS.getKey(block.getBlock());
+        Identifier blockId = BuiltInRegistries.BLOCK.getKey(block.getBlock());
         if (blockId == null) {
             return null;
         }

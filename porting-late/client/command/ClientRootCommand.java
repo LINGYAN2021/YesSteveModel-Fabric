@@ -26,8 +26,8 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.synchronization.SuggestionProviders;
 import net.minecraft.resources.Identifier;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.loader.api.FabricLoader;
 
 import java.util.Optional;
 import java.util.Set;
@@ -47,7 +47,7 @@ public class ClientRootCommand {
     }
 
     public static final SuggestionProvider<CommandSourceStack> ALL_VARS = SuggestionProviders.register(Identifier.fromNamespaceAndPath(YesSteveModel.MOD_ID, "vars"), (source, builder) -> {
-        if (source.getSource() instanceof SharedSuggestionProvider && FMLEnvironment.dist == Dist.CLIENT) {
+        if (source.getSource() instanceof SharedSuggestionProvider && FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
             return getTarget().map(cap -> {
                 // v 变量
                 Set<String> vars = Sets.newHashSet();
@@ -84,7 +84,7 @@ public class ClientRootCommand {
     });
 
     public static final SuggestionProvider<CommandSourceStack> ALL_CONTROLLERS = SuggestionProviders.register(Identifier.fromNamespaceAndPath(YesSteveModel.MOD_ID, "controllers"), (source, builder) -> {
-        if (source.getSource() instanceof SharedSuggestionProvider && FMLEnvironment.dist == Dist.CLIENT) {
+        if (source.getSource() instanceof SharedSuggestionProvider && FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
             return getTarget().map(target -> {
                 Set<String> vars = target.getAnimationData()
                         .getAnimationControllers()

@@ -8,8 +8,8 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.tags.ITagManager;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.tags.TagManager;
 import org.apache.commons.lang3.StringUtils;
 
 public class RideCheck extends LivingEntityFunction {
@@ -50,7 +50,7 @@ public class RideCheck extends LivingEntityFunction {
         String subInput = input.substring(1);
         EntityType<?> entityType = checkEntity.getType();
         if (input.startsWith(ID_PREFIX)) {
-            Identifier registryName = ForgeRegistries.ENTITY_TYPES.getKey(entityType);
+            Identifier registryName = BuiltInRegistries.ENTITY_TYPE.getKey(entityType);
             if (registryName == null) {
                 return FALSE;
             }
@@ -59,7 +59,7 @@ public class RideCheck extends LivingEntityFunction {
         }
 
         if (input.startsWith(TAG_PREFIX)) {
-            ITagManager<EntityType<?>> tags = ForgeRegistries.ENTITY_TYPES.tags();
+            TagManager<EntityType<?>> tags = BuiltInRegistries.ENTITY_TYPE.tags();
             if (tags == null) {
                 return FALSE;
             }

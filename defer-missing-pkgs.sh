@@ -58,7 +58,13 @@ while true; do
     [ "$rel" = "$uf" ] && continue
     [ ! -f "src/main/java/com/elfmcys/ysm/$rel" ] && continue
     mkdir -p "porting-late/$(dirname "$rel")"
-    git mv -f "src/main/java/com/elfmcys/ysm/$rel" "porting-late/$rel" 2>/dev/null && MOVED=$((MOVED+1))
+    if git mv -f "src/main/java/com/elfmcys/ysm/$rel" "porting-late/$rel" 2>/dev/null; then
+      MOVED=$((MOVED+1))
+    elif mv -f "src/main/java/com/elfmcys/ysm/$rel" "porting-late/$rel" 2>/dev/null; then
+      git add "porting-late/$rel" 2>/dev/null
+      git rm -q --cached "src/main/java/com/elfmcys/ysm/$rel" 2>/dev/null
+      MOVED=$((MOVED+1))
+    fi
   done < /tmp/ysm_defer.txt
   echo "  moved: $MOVED"
   [ "$MOVED" -eq 0 ] && { echo "no progress"; break; }

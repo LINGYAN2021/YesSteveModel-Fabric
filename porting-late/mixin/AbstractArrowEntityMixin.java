@@ -6,7 +6,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 import org.apache.commons.lang3.StringUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -49,7 +49,7 @@ public class AbstractArrowEntityMixin implements IArrowExtraInfo {
         }
         // 设置 owner 时，缓存一下射击时主手物品 ID，用于 molang
         if (owner instanceof LivingEntity livingEntity) {
-            Identifier key = ForgeRegistries.ITEMS.getKey(livingEntity.getMainHandItem().getItem());
+            Identifier key = BuiltInRegistries.ITEM.getKey(livingEntity.getMainHandItem().getItem());
             if (key != null) {
                 shootItemId = key.toString();
             }

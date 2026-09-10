@@ -16,14 +16,14 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.api.distmarker.Dist;
+import net.fabricmc.api.EnvType;
 import net.minecraftforge.client.event.RenderHandEvent;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
-import net.minecraftforge.common.MinecraftForge;
+import com.elfmcys.ysm.event.bus.YsmEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-@Mod.EventBusSubscriber(value = Dist.CLIENT)
+@Mod.EventBusSubscriber(value = EnvType.CLIENT)
 public class RenderFirstPlayerBackground {
     /**
      * 因为 RenderHandEvent 可有几率会渲染多次，所以为了避免多次渲染，这样设计
@@ -76,7 +76,7 @@ public class RenderFirstPlayerBackground {
             final PoseStack poseStack = event.getPoseStack();
             MultiBufferSource multiBufferSource = event.getMultiBufferSource();
             CustomPlayerEntity customPlayer = cap;
-            if (MinecraftForge.EVENT_BUS.post(new SpecialPlayerRenderEvent(player, customPlayer, modelId))) {
+            if (YsmEventBus.post(new SpecialPlayerRenderEvent(player, customPlayer, modelId))) {
                 return;
             }
 

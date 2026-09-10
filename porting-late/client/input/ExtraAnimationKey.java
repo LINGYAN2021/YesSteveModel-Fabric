@@ -12,7 +12,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraftforge.api.distmarker.Dist;
+import net.fabricmc.api.EnvType;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
@@ -25,7 +25,7 @@ import java.util.List;
 
 import static com.elfmcys.ysm.client.gui.AnimationRouletteScreen.addRootClassify;
 
-@Mod.EventBusSubscriber(value = Dist.CLIENT)
+@Mod.EventBusSubscriber(value = EnvType.CLIENT)
 public class ExtraAnimationKey {
     public static final List<KeyMapping> EXTRA_ANIMATION_KEYS = Lists.newArrayList();
 

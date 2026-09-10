@@ -76,7 +76,7 @@ public final class NetworkHandler {
     }
 
     public static boolean isPlayerChannelPresent(ServerPlayer player) {
-        return player.connection != null && isChannelPresent(player.connection.getConnection());
+        return player.connection != null && isChannelPresent(((com.elfmcys.ysm.mixin.ServerCommonPacketListenerAccessor) player.connection).ysm$getConnection());
     }
 
     public static boolean isRemoteChannelPresent() {

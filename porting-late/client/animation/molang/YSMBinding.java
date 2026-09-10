@@ -50,9 +50,9 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.fml.ModList;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraftforge.forgespi.language.IModInfo;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collection;
@@ -217,7 +217,7 @@ public class YSMBinding extends ContextBinding {
                 return "";
             }
             BlockState blockState = level.getBlockState(result.getBlockPos());
-            Identifier id = ForgeRegistries.BLOCKS.getKey(blockState.getBlock());
+            Identifier id = BuiltInRegistries.BLOCK.getKey(blockState.getBlock());
             if (id != null) {
                 return id.toString();
             } else {
@@ -227,7 +227,7 @@ public class YSMBinding extends ContextBinding {
 
         if (hitResult instanceof EntityHitResult result) {
             Entity entity = result.getEntity();
-            Identifier id = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType());
+            Identifier id = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
             if (id != null) {
                 return id.toString();
             } else {
@@ -253,7 +253,7 @@ public class YSMBinding extends ContextBinding {
     private static String getHookedIn(IContext<FishingHook> ctx) {
         Entity hooked = ((FishingHookAccessor) ctx.entity()).ysm$GetHookedIn();
         if (hooked != null) {
-            Identifier id = ForgeRegistries.ENTITY_TYPES.getKey(hooked.getType());
+            Identifier id = BuiltInRegistries.ENTITY_TYPE.getKey(hooked.getType());
             if (id != null) {
                 return id.toString();
             }
@@ -265,7 +265,7 @@ public class YSMBinding extends ContextBinding {
         ThrowableItemProjectile entity = ctx.entity();
         if (entity instanceof ThrowableItemProjectileAccessor accessor) {
             Item item = accessor.ysm$GetDefaultItem();
-            Identifier id = ForgeRegistries.ITEMS.getKey(item);
+            Identifier id = BuiltInRegistries.ITEM.getKey(item);
             if (id != null) {
                 return id.toString();
             }
@@ -329,7 +329,7 @@ public class YSMBinding extends ContextBinding {
         if (entity instanceof Player) {
             return "player";
         }
-        Identifier key = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType());
+        Identifier key = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
         if (key == null) {
             return StringUtils.EMPTY;
         }
@@ -400,7 +400,7 @@ public class YSMBinding extends ContextBinding {
         }
 
         for (MobEffectInstance instance : effects) {
-            Identifier id = ForgeRegistries.MOB_EFFECTS.getKey(instance.getEffect());
+            Identifier id = BuiltInRegistries.MOB_EFFECT.getKey(instance.getEffect());
             context.debugPrint(Component.literal("Effect: display ").append(ComponentUtils.copyOnClickText(instance.getEffect().getDisplayName().getString(99)))
                     .append(Component.literal("  name ").append(ComponentUtils.copyOnClickText(id.toString())))
                     .append("  lv=").append(String.valueOf(instance.getAmplifier() + 1)));

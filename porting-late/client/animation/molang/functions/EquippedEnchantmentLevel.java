@@ -10,7 +10,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.resources.Identifier;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 public class EquippedEnchantmentLevel extends LivingEntityFunction {
     @Override
@@ -28,7 +28,7 @@ public class EquippedEnchantmentLevel extends LivingEntityFunction {
         for (var i = 1; i < arguments.size(); ++i) {
             Identifier id = arguments.getAsResourceLocation(context, 1);
             if (id != null) {
-                Enchantment enchantment = ForgeRegistries.ENCHANTMENTS.getValue(id);
+                Enchantment enchantment = BuiltInRegistries.ENCHANTMENT.getValue(id);
                 if (enchantment != null) {
                     sum += itemStack.getEnchantmentLevel(enchantment);
                 }

@@ -5,7 +5,7 @@ import com.elfmcys.ysm.api.annotation.YsmEventHandler;
 import java.lang.annotation.ElementType;
 import java.util.List;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.ModList;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.forgespi.language.ModFileScanData;
 

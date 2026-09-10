@@ -2,48 +2,37 @@ package com.elfmcys.ysm.event;
 
 import com.elfmcys.ysm.YesSteveModel;
 import com.elfmcys.ysm.capability.ModelInfoCapabilityProvider;
+import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.event.entity.living.MobEffectEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.LivingEntity;
 
-@Mod.EventBusSubscriber
-@SuppressWarnings("resource")
-public class MobEffectSyncEvent {
-    @SubscribeEvent
-    public static void onAdded(MobEffectEvent.Added event) {
-        if (!YesSteveModel.isAvailable() || event.getEntity().level().isClientSide()) {
+/**
+ * 药水效果同步，由 LivingEntityEffectMixin 触发
+ */
+public final class MobEffectSyncEvent {
+    private MobEffectSyncEvent() {
+    }
+
+    public static void onAdded(LivingEntity entity, MobEffectInstance effectInstance) {
+        if (!YesSteveModel.isAvailable() || entity.level().isClientSide()) {
             return;
         }
-        if (event.getEntity() instanceof ServerPlayer player && event.getEffectInstance().getEffect() != null) {
-            var effectInstance = event.getEffectInstance();
-            player.getCapability(ModelInfoCapabilityProvider.MODEL_INFO_CAP).ifPresent(cap -> {
-                cap.getPropertiesTracker().addEffect(player, effectInstance.getEffect(), effectInstance.getAmplifier() + 1);
-            });
+        if (entity instanceof ServerPlayer player && effectInstance.getEffect() != null) {
+            player.getCapability(ModelInfoCapabilityProvider.MODEL_INFO_CAP).ifPresent(cap ->
+                    cap.getPropertiesTracker().addEffect(player, effectInstance.getEffect().value(),
+                            effectInstance.getAmplifier() + 1));
         }
     }
 
-    @SubscribeEvent
-    public static void onRemoved(MobEffectEvent.Remove event) {
-        if (!YesSteveModel.isAvailable() || event.getEntity().level().isClientSide()) {
+    public static void onRemoved(LivingEntity entity, Holder<MobEffect> effect) {
+        if (!YesSteveModel.isAvailable() || entity.level().isClientSide() || effect == null) {
             return;
         }
-        if (event.getEntity() instanceof ServerPlayer player && event.getEffect() != null) {
-            player.getCapability(ModelInfoCapabilityProvider.MODEL_INFO_CAP).ifPresent(cap -> {
-                cap.getPropertiesTracker().removeEffect(player, event.getEffect());
-            });
-        }
-    }
-
-    @SubscribeEvent
-    public static void onExpired(MobEffectEvent.Expired event) {
-        if (!YesSteveModel.isAvailable() || event.getEntity().level().isClientSide()) {
-            return;
-        }
-        if (event.getEntity() instanceof ServerPlayer player && event.getEffectInstance() != null && event.getEffectInstance().getEffect() != null) {
-            player.getCapability(ModelInfoCapabilityProvider.MODEL_INFO_CAP).ifPresent(cap -> {
-                cap.getPropertiesTracker().removeEffect(player, event.getEffectInstance().getEffect());
-            });
+        if (entity instanceof ServerPlayer player) {
+            player.getCapability(ModelInfoCapabilityProvider.MODEL_INFO_CAP).ifPresent(cap ->
+                    cap.getPropertiesTracker().removeEffect(player, effect.value()));
         }
     }
 }

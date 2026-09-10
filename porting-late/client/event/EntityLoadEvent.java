@@ -9,7 +9,7 @@ import net.minecraft.world.entity.player.Player;
 import com.elfmcys.ysm.network.fabric.ClientProtocolGateway;
 import com.elfmcys.ysm.network.fabric.PlayerStateHandler;
 import net.minecraftforge.event.entity.EntityLeaveLevelEvent;
-import net.minecraftforge.api.distmarker.Dist;
+import net.fabricmc.api.EnvType;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-@Mod.EventBusSubscriber(value = Dist.CLIENT)
+@Mod.EventBusSubscriber(value = EnvType.CLIENT)
 public class EntityLoadEvent {
     private static final Cache<Integer, List<Consumer<Entity>>> CACHE = CacheBuilder.newBuilder().expireAfterAccess(30,TimeUnit.SECONDS).build();
 

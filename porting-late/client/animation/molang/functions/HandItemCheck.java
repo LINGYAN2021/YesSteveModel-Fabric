@@ -12,8 +12,8 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.tags.ITagManager;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.tags.TagManager;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Locale;
@@ -72,7 +72,7 @@ public class HandItemCheck extends LivingEntityFunction {
 
         String subInput = input.substring(1);
         if (input.startsWith(ID_PREFIX)) {
-            Identifier registryName = ForgeRegistries.ITEMS.getKey(item.getItem());
+            Identifier registryName = BuiltInRegistries.ITEM.getKey(item.getItem());
             if (registryName == null) {
                 return FALSE;
             }
@@ -81,7 +81,7 @@ public class HandItemCheck extends LivingEntityFunction {
         }
 
         if (input.startsWith(TAG_PREFIX)) {
-            ITagManager<Item> tags = ForgeRegistries.ITEMS.tags();
+            TagManager<Item> tags = BuiltInRegistries.ITEM.tags();
             if (tags == null) {
                 return FALSE;
             }

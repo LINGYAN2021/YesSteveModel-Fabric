@@ -9,7 +9,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.resources.Identifier;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 public class ItemNameAny extends LivingEntityFunction {
     @Override
@@ -24,7 +24,7 @@ public class ItemNameAny extends LivingEntityFunction {
             return false;
         }
 
-        Identifier actualId = ForgeRegistries.ITEMS.getKey(itemStack.getItem());
+        Identifier actualId = BuiltInRegistries.ITEM.getKey(itemStack.getItem());
         if(actualId == null) {
             return false;
         }

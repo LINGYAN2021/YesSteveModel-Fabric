@@ -11,8 +11,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUseAnimation;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.tags.ITagManager;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.tags.TagManager;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Locale;
@@ -53,7 +53,7 @@ public class ConditionalHold {
             idTest.add(Identifier.parse(substring));
         }
         if (name.startsWith(tagPre) && (Identifier.tryParse(substring) != null)) {
-            ITagManager<Item> tags = ForgeRegistries.ITEMS.tags();
+            TagManager<Item> tags = BuiltInRegistries.ITEM.tags();
             if (tags == null) {
                 return;
             }
@@ -89,7 +89,7 @@ public class ConditionalHold {
             return EMPTY;
         }
         ItemStack itemInHand = livingEntity.getItemInHand(hand);
-        Identifier registryName = ForgeRegistries.ITEMS.getKey(itemInHand.getItem());
+        Identifier registryName = BuiltInRegistries.ITEM.getKey(itemInHand.getItem());
         if (registryName == null) {
             return EMPTY;
         }
@@ -104,7 +104,7 @@ public class ConditionalHold {
             return EMPTY;
         }
         ItemStack itemInHand = livingEntity.getItemInHand(hand);
-        ITagManager<Item> tags = ForgeRegistries.ITEMS.tags();
+        TagManager<Item> tags = BuiltInRegistries.ITEM.tags();
         if (tags == null) {
             return EMPTY;
         }
