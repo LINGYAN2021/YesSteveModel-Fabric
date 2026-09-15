@@ -73,6 +73,8 @@ public final class LocalModelSource implements ModelSource {
         return switch (rootKind) {
             case BUILTIN -> ModelSources.BUILTIN;
             case CUSTOM -> ModelSources.LOCAL_CUSTOM;
+            // 旧版模型目录同样算本地自定义模型来源
+            case LEGACY_CUSTOM -> ModelSources.LOCAL_CUSTOM_LEGACY;
             case AUTH -> ModelSources.LOCAL_AUTH;
         };
     }

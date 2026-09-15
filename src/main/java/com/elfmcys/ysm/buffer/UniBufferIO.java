@@ -1,6 +1,6 @@
 package com.elfmcys.ysm.buffer;
 
-import io.netty.util.internal.PlatformDependent;
+import java.nio.ByteBuffer;
 
 public final class UniBufferIO {
     private UniBufferIO() {
@@ -19,18 +19,16 @@ public final class UniBufferIO {
                 System.arraycopy(sourceArray.array(), sourceIndex,
                         targetArray.array(), targetArray.arrayOffset() + targetOffset, length);
             } else {
-                PlatformDependent.copyMemory(sourceArray.array(), sourceIndex,
-                        ((NativeBuffer) target).ptr() + targetOffset, length);
+                view((NativeBuffer) target, targetOffset, length)
+                        .put(sourceArray.array(), sourceIndex, length);
             }
             return;
         }
-        var sourceAddress = ((NativeBuffer) source).ptr() + sourceOffset;
+        var sourceView = view((NativeBuffer) source, sourceOffset, length);
         if (target instanceof ArrayBuffer targetArray) {
-            PlatformDependent.copyMemory(sourceAddress, targetArray.array(),
-                    targetArray.arrayOffset() + targetOffset, length);
+            sourceView.get(targetArray.array(), targetArray.arrayOffset() + targetOffset, length);
         } else {
-            PlatformDependent.copyMemory(sourceAddress,
-                    ((NativeBuffer) target).ptr() + targetOffset, length);
+            view((NativeBuffer) target, targetOffset, length).put(sourceView);
         }
     }
 
@@ -38,18 +36,8 @@ public final class UniBufferIO {
                                  byte[] target, int targetOffset, int length) {
         checkRange(source.size(), sourceOffset, length);
         checkRange(target.length, targetOffset, length);
-        if (source instanceof ArrayBuffer array) {
-            var sourceIndex = array.arrayOffset() + sourceOffset;
-            for (var index = 0; index < length; index++) {
-                if (array.array()[sourceIndex + index] != target[targetOffset + index]) {
-                    return false;
-                }
-            }
-            return true;
-        }
-        var address = ((NativeBuffer) source).ptr() + sourceOffset;
         for (var index = 0; index < length; index++) {
-            if (PlatformDependent.getByte(address + index) != target[targetOffset + index]) {
+            if (get(source, sourceOffset + index) != target[targetOffset + index]) {
                 return false;
             }
         }
@@ -72,7 +60,13 @@ public final class UniBufferIO {
         if (buffer instanceof ArrayBuffer array) {
             return array.array()[array.arrayOffset() + index];
         }
-        return PlatformDependent.getByte(((NativeBuffer) buffer).ptr() + index);
+        return ((NativeBuffer) buffer).nio().get(index);
+    }
+
+    private static ByteBuffer view(NativeBuffer buffer, int offset, int length) {
+        var view = buffer.nio();
+        view.position(offset).limit(offset + length);
+        return view;
     }
 
     private static void checkRange(int size, int offset, int length) {

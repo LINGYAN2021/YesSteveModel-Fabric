@@ -1,8 +1,8 @@
 package com.elfmcys.ysm.natives.buffer;
 
 import com.elfmcys.ysm.buffer.NativeBuffer;
-import org.lwjgl.system.MemoryUtil;
 
+import java.lang.foreign.MemorySegment;
 import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -27,7 +27,7 @@ public class NativeHeapBuffer implements NativeBuffer {
             throw new OutOfMemoryError();
         }
         this.headPtr = managedHeapPtr;
-        this.data = MemoryUtil.memByteBuffer(headPtr, size);
+        this.data = nWrap(headPtr, size);
         this.refCounter = new AtomicInteger(1);
     }
 
@@ -38,9 +38,10 @@ public class NativeHeapBuffer implements NativeBuffer {
         if (!ownedMem.isDirect()) {
             throw new IllegalArgumentException("Buffer is not direct");
         }
-        this.managedHeapPtr = MemoryUtil.memAddressSafe(ownedMem) - ownedMem.position();
-        this.headPtr = managedHeapPtr + ownedMem.position();
-        this.data = MemoryUtil.memByteBuffer(headPtr, ownedMem.remaining());
+        var headAddress = MemorySegment.ofBuffer(ownedMem).address();
+        this.managedHeapPtr = headAddress - ownedMem.position();
+        this.headPtr = headAddress;
+        this.data = nWrap(headAddress, ownedMem.remaining());
         this.refCounter = new AtomicInteger(1);
     }
 
@@ -72,7 +73,7 @@ public class NativeHeapBuffer implements NativeBuffer {
         }
 
         var headPtr = this.headPtr + offset;
-        var data = MemoryUtil.memByteBuffer(headPtr, size);
+        var data = nWrap(headPtr, size);
         return new NativeHeapBuffer(managedHeapPtr, headPtr, data, refCounter);
     }
 
@@ -99,6 +100,11 @@ public class NativeHeapBuffer implements NativeBuffer {
             nFree(managedHeapPtr);
         }
     }
+
+    /**
+     * 将原生内存地址包装为 DirectByteBuffer（等价于 LWJGL 的 memByteBuffer）
+     */
+    public static native ByteBuffer nWrap(long addr, int size);
 
     private static native long nAlloc(int size, int alignment);
 

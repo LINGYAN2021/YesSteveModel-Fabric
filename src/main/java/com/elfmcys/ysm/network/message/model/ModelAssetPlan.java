@@ -1,5 +1,6 @@
 package com.elfmcys.ysm.network.message.model;
 
+import com.elfmcys.ysm.YesSteveModel;
 import com.elfmcys.ysm.format.container.AssetContainerView;
 import com.elfmcys.ysm.format.schema.file.AssetFileConstant;
 import com.elfmcys.ysm.format.schema.model.ModelFileConstant;
@@ -49,6 +50,13 @@ public final class ModelAssetPlan {
 
     public static String chooseTexture(ManifestOuterClass.Manifest manifest, String targetId, String requested) {
         var target = target(manifest, targetId);
+        // 请求的贴图可能来自旧存档或上一次选择的模型，此时退回模型默认贴图，
+        // 否则整只模型都会被判定为加载失败并回退到默认模型
+        if (requested != null && !requested.isBlank() && !containsTexture(target, requested)) {
+            YesSteveModel.LOGGER.warn("Unknown texture {} for render target {}, falling back to default",
+                    requested, targetId);
+            requested = "";
+        }
         if (requested != null && !requested.isBlank()) {
             texture(target, requested);
             return requested;

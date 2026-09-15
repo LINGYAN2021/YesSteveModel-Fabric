@@ -3,7 +3,7 @@ package com.elfmcys.ysm.api.rendering.v0.event;
 import com.elfmcys.ysm.api.rendering.v0.TargetKind;
 import com.elfmcys.ysm.geckolib3.geo.GeoRenderData;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import com.elfmcys.ysm.event.bus.YsmCancelable;
 import com.elfmcys.ysm.event.bus.YsmEvent;
 import org.jetbrains.annotations.ApiStatus;
@@ -14,16 +14,16 @@ public class RenderLayerEvent extends YsmEvent {
     private final TargetKind targetKind;
     private final GeoRenderData renderData;
     private final PoseStack poseStack;
-    private final MultiBufferSource buffer;
+    private final SubmitNodeCollector collector;
     private final int packedLight;
     private final int overlay;
 
-    public RenderLayerEvent(Object target, TargetKind targetKind, GeoRenderData renderData, PoseStack poseStack, MultiBufferSource buffer, int packedLight, int overlay) {
+    public RenderLayerEvent(Object target, TargetKind targetKind, GeoRenderData renderData, PoseStack poseStack, SubmitNodeCollector collector, int packedLight, int overlay) {
         this.target = target;
         this.targetKind = targetKind;
         this.renderData = renderData;
         this.poseStack = poseStack;
-        this.buffer = buffer;
+        this.collector = collector;
         this.packedLight = packedLight;
         this.overlay = overlay;
     }
@@ -44,8 +44,8 @@ public class RenderLayerEvent extends YsmEvent {
         return poseStack;
     }
 
-    public MultiBufferSource buffer() {
-        return buffer;
+    public SubmitNodeCollector collector() {
+        return collector;
     }
 
     public int packedLight() {

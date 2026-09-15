@@ -3,7 +3,7 @@ package com.elfmcys.ysm.natives.render;
 
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
-import org.lwjgl.system.MemoryUtil;
+import com.elfmcys.ysm.natives.buffer.NativeHeapBuffer;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -33,7 +33,7 @@ public final class BonePoseView {
             throw new IllegalStateException("Native bone pose pointer is null");
         }
         data = byteCount == 0 ? EMPTY_BUFFER :
-                MemoryUtil.memByteBuffer(ptr, byteCount);
+                NativeHeapBuffer.nWrap(ptr, byteCount);
         data.order(ByteOrder.nativeOrder());
         this.boneCount = boneCount;
     }

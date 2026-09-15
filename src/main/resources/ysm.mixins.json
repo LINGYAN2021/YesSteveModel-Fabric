@@ -8,9 +8,32 @@
     "defaultRequire": 1
   },
   "client": [
-    "client.SoundEngineMixin"
+    "client.SoundEngineMixin",
+    "client.KeyboardHandlerMixin",
+    "client.MouseHandlerMixin",
+    "client.ClientPacketListenerMixin",
+    "client.EntityRenderDispatcherMixin",
+    "client.EntityRenderDispatcherExtractMixin",
+    "client.EntityRenderDispatcherAccessor",
+    "client.EntityRenderStateLinkMixin",
+    "client.EntityRendererCreateStateMixin",
+    "client.GuiGraphicsExtractorAccessor",
+    "client.GuiRendererMixin",
+    "client.GameRendererProjectionMixin",
+    "client.ProjectionMatrixBufferMixin",
+    "client.GpuBufferSliceMixin",
+    "client.LevelRendererMixin",
+    "client.ArrowEntityAccessor",
+    "client.FishingHookAccessor",
+    "client.ThrowableItemProjectileAccessor",
+    "client.NativeImageAccessor",
+    "client.ScreenAccessor",
+    "client.BufferBuilderMixin"
   ],
   "mixins": [
+    "AbstractArrowEntityMixin",
+    "ProjectileEntityMixin",
+    "ServerPlayerMixin",
     "ConnectionAttributeMixin",
     "EntityCapabilityMixin",
     "LivingEntityEffectMixin",

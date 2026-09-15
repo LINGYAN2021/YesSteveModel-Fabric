@@ -1,8 +1,8 @@
 package com.elfmcys.ysm.buffer;
 
 import com.elfmcys.ysm.util.UnsafeUtil;
-import org.lwjgl.system.MemoryUtil;
 
+import java.lang.foreign.MemorySegment;
 import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -21,7 +21,7 @@ class NativeNioBuffer implements NativeBuffer {
         this.owner = data.slice();
         this.owning = owning;
         this.data = owner;
-        this.headPtr = MemoryUtil.memAddress(owner);
+        this.headPtr = MemorySegment.ofBuffer(owner).address();
         this.refCounter = owning ? new AtomicInteger(1) : null;
     }
 
@@ -60,7 +60,7 @@ class NativeNioBuffer implements NativeBuffer {
         }
 
         var data = this.data.slice(offset, size);
-        var headPtr = MemoryUtil.memAddress(data);
+        var headPtr = MemorySegment.ofBuffer(data).address();
 
         return new NativeNioBuffer(owner, owning, data, headPtr, refCounter);
     }

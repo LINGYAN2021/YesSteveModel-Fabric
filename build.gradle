@@ -55,6 +55,58 @@ loom {
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
+// 内置模型索引生成工具（源码在 src/builtinIndexTool）
+sourceSets {
+    builtinIndexTool {
+        java.srcDir 'src/builtinIndexTool/java'
+        compileClasspath += sourceSets.main.output.classesDirs + sourceSets.main.compileClasspath
+        runtimeClasspath += sourceSets.main.output.classesDirs + configurations.runtimeClasspath
+    }
+}
+
+def ysmNativeLib = layout.projectDirectory.file('native/ysm.dll')
+def builtinRoot = layout.projectDirectory.dir('src/main/resources/assets/ysm/builtin')
+def builtinIndexWork = layout.buildDirectory.dir('builtinIndex')
+def builtinDefaultContract = layout.buildDirectory.file('builtinIndex/default-contract.json')
+def builtinAnimationHistory = layout.projectDirectory.file('src/generated/resources/assets/ysm/builtin-animation-history.json')
+def builtinIndexFile = layout.projectDirectory.file('src/generated/resources/assets/ysm/builtin-index.json')
+
+tasks.register('generateBuiltinDefaultContract', JavaExec) {
+    dependsOn 'compileBuiltinIndexToolJava'
+    inputs.dir(builtinRoot.dir('default'))
+    inputs.file(ysmNativeLib)
+    outputs.file(builtinDefaultContract)
+    classpath = sourceSets.builtinIndexTool.runtimeClasspath
+    mainClass = 'com.elfmcys.ysm.tool.BuiltinModelIndexTool'
+    args 'generate-default-contract',
+            ysmNativeLib.asFile.absolutePath,
+            builtinRoot.dir('default').asFile.absolutePath,
+            builtinDefaultContract.get().asFile.absolutePath,
+            builtinIndexWork.map { it.dir('work-default').asFile.absolutePath }.get()
+}
+
+tasks.register('generateBuiltinModelIndex', JavaExec) {
+    dependsOn 'generateBuiltinDefaultContract'
+    inputs.dir(builtinRoot)
+    inputs.file(ysmNativeLib)
+    inputs.file(builtinDefaultContract)
+    if (builtinAnimationHistory.asFile.exists()) {
+        inputs.file(builtinAnimationHistory)
+    }
+    outputs.file(builtinIndexFile)
+    classpath = sourceSets.builtinIndexTool.runtimeClasspath
+    mainClass = 'com.elfmcys.ysm.tool.BuiltinModelIndexTool'
+    args 'generate-index',
+            ysmNativeLib.asFile.absolutePath,
+            builtinRoot.asFile.absolutePath,
+            builtinIndexFile.asFile.absolutePath,
+            builtinIndexWork.map { it.dir('work-index').asFile.absolutePath }.get(),
+            builtinDefaultContract.get().asFile.absolutePath,
+            builtinAnimationHistory.asFile.absolutePath
+}
+
+processResources.dependsOn 'generateBuiltinModelIndex'
+
 processResources {
     inputs.property "mod_version", project.version
     filteringCharset "UTF-8"
@@ -146,6 +198,10 @@ tasks.named('shadowJar') {
     from(relocateProcessorAsmTask.flatMap { it.archiveFile }.map { archive ->
         project.zipTree(archive.asFile)
     })
+    // 可选嵌入原生核心库：将 YesSteveModel-Native 构建产出的 ysm.dll 放入 native/ 目录
+    from(layout.projectDirectory.dir('native')) {
+        into 'META-INF/native'
+    }
     configurations = [project.configurations.ysmImplementation]
     archiveClassifier = ''
     exclude '**/*.proto'

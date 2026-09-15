@@ -27,8 +27,8 @@ public final class GeoModelState implements Closeable {
         var boneCount = model.sortedBones().size();
         var activeLocatorMap = this.activeLocatorMap;
 
-        var valid = nativeState.extract(model.bakedModel(),
-                animatedModel.getBoneAttributes());
+        var boneAttributes = animatedModel.getBoneAttributes();
+        var valid = nativeState.extract(model.bakedModel(), boneAttributes);
         if (!valid) {
             return false;
         }

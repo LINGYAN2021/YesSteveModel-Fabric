@@ -1,9 +1,9 @@
 package com.elfmcys.ysm.buffer;
 
 import com.elfmcys.ysm.util.UnsafeUtil;
-import org.lwjgl.system.MemoryUtil;
 
 import java.io.IOException;
+import java.lang.foreign.MemorySegment;
 import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
@@ -22,7 +22,7 @@ class MappedFileBuffer implements NativeBuffer {
         this.mappedRegion = file.map(FileChannel.MapMode.READ_ONLY, offset, size);
         this.file = file;
         this.data = mappedRegion.duplicate();
-        this.headPtr = MemoryUtil.memAddress(mappedRegion);
+        this.headPtr = MemorySegment.ofBuffer(mappedRegion).address();
 
         this.refCounter = new AtomicInteger(1);
     }
@@ -57,8 +57,8 @@ class MappedFileBuffer implements NativeBuffer {
             throw new IndexOutOfBoundsException();
         }
 
-        var headPtr = this.headPtr + offset;
-        var data = MemoryUtil.memByteBuffer(headPtr, size);
+        var data = this.data.slice(offset, size);
+        var headPtr = MemorySegment.ofBuffer(data).address();
         return new MappedFileBuffer(mappedRegion, file, data, headPtr, refCounter);
     }
 

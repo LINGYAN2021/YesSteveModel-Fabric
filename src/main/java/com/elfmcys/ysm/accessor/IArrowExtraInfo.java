@@ -1,7 +1,7 @@
 package com.elfmcys.ysm.accessor;
 
 public interface IArrowExtraInfo {
-    boolean isInGround();
+    boolean ysm$isInGround();
 
     int inGroundTime();
 

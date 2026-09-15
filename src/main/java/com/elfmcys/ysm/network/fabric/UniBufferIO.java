@@ -4,9 +4,7 @@ import com.elfmcys.ysm.buffer.ArrayBuffer;
 import com.elfmcys.ysm.buffer.NativeBuffer;
 import com.elfmcys.ysm.buffer.UniBuffer;
 import io.netty.buffer.ByteBuf;
-import io.netty.util.internal.PlatformDependent;
 import net.minecraft.network.FriendlyByteBuf;
-import org.lwjgl.system.MemoryUtil;
 
 final class UniBufferIO {
     private UniBufferIO() {
@@ -18,19 +16,9 @@ final class UniBufferIO {
             return;
         }
         var nativeBuffer = (NativeBuffer) source;
-        var length = nativeBuffer.size();
-        var index = target.writerIndex();
-        target.ensureWritable(length);
-        if (target.hasMemoryAddress()) {
-            PlatformDependent.copyMemory(nativeBuffer.ptr(), target.memoryAddress() + index, length);
-            target.writerIndex(index + length);
-        } else if (target.hasArray()) {
-            PlatformDependent.copyMemory(nativeBuffer.ptr(), target.array(),
-                    target.arrayOffset() + index, length);
-            target.writerIndex(index + length);
-        } else {
-            target.writeBytes(MemoryUtil.memByteBuffer(nativeBuffer.ptr(), length));
-        }
+        var view = nativeBuffer.nio();
+        view.position(0).limit(nativeBuffer.size());
+        target.writeBytes(view);
     }
 
     static NativeBuffer readNative(FriendlyByteBuf source, int length) {
@@ -55,15 +43,8 @@ final class UniBufferIO {
                 || targetOffset > target.size() - length) {
             throw new IndexOutOfBoundsException();
         }
-        if (source.hasMemoryAddress()) {
-            PlatformDependent.copyMemory(source.memoryAddress() + sourceIndex,
-                    target.ptr() + targetOffset, length);
-        } else if (source.hasArray()) {
-            PlatformDependent.copyMemory(source.array(), source.arrayOffset() + sourceIndex,
-                    target.ptr() + targetOffset, length);
-        } else {
-            source.getBytes(sourceIndex,
-                    MemoryUtil.memByteBuffer(target.ptr() + targetOffset, length));
-        }
+        var view = target.nio();
+        view.position(targetOffset).limit(targetOffset + length);
+        source.getBytes(sourceIndex, view);
     }
 }

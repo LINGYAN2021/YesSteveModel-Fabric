@@ -2,7 +2,6 @@ package com.elfmcys.ysm.buffer;
 
 import com.elfmcys.ysm.natives.buffer.NativeHeapBuffer;
 import com.elfmcys.ysm.util.ScopeGuard;
-import org.lwjgl.system.MemoryUtil;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -26,7 +25,7 @@ public interface NativeBuffer extends UniBuffer {
     default NativeBuffer copy() {
         var size = size();
         try (var bufScope = allocateWithScope(size)) {
-            MemoryUtil.memCopy(ptr(), bufScope.get().ptr(), size);
+            bufScope.get().nio().put(nio());
             return bufScope.release();
         }
     }
@@ -83,11 +82,7 @@ public interface NativeBuffer extends UniBuffer {
 
     static NativeBuffer copyOf(ByteBuffer data) {
         var result = allocate(data.remaining());
-        if (data.isDirect()) {
-            MemoryUtil.memCopy(MemoryUtil.memAddress(data), result.ptr(), result.size());
-        } else {
-            result.nio().put(data.duplicate());
-        }
+        result.nio().put(data.duplicate());
         return result;
     }
 }

@@ -3,11 +3,12 @@ package com.elfmcys.ysm.natives.render;
 import com.elfmcys.ysm.buffer.NativeBuffer;
 import com.elfmcys.ysm.buffer.annotation.Borrowed;
 import com.elfmcys.ysm.geckolib3.model.AnimatedGeoModel;
+import com.elfmcys.ysm.natives.buffer.NativeHeapBuffer;
 import com.elfmcys.ysm.natives.NativeObject;
 import com.elfmcys.ysm.util.ExposedShortArrayList;
 import it.unimi.dsi.fastutil.shorts.ShortList;
-import org.lwjgl.system.MemoryUtil;
 
+import java.nio.ByteOrder;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
@@ -171,7 +172,7 @@ public final class NativeModelState extends NativeObject {
         if (ptr == 0) {
             throw new IllegalStateException("Native buffer pointer is null");
         }
-        return NativeBuffer.borrow(MemoryUtil.memByteBuffer(ptr, size));
+        return NativeBuffer.borrow(NativeHeapBuffer.nWrap(ptr, size));
     }
 
     private static ShortBuffer borrowShortBuffer(long ptr, int size) {
@@ -181,7 +182,7 @@ public final class NativeModelState extends NativeObject {
         if (ptr == 0) {
             throw new IllegalStateException("Native short buffer pointer is null");
         }
-        return MemoryUtil.memShortBuffer(ptr, size);
+        return NativeHeapBuffer.nWrap(ptr, size * 2).order(ByteOrder.nativeOrder()).asShortBuffer();
     }
 
     @Override

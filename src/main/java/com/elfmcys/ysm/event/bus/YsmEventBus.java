@@ -20,6 +20,31 @@ public final class YsmEventBus {
         LISTENERS.computeIfAbsent(eventType, k -> new CopyOnWriteArrayList<>()).add(listener);
     }
 
+    /**
+     * 注册一个事件处理器对象：其所有"公开、单参数、参数类型为 YsmEvent 子类"的方法
+     * 都会被注册为对应事件类型的监听器。
+     */
+    public static void registerHandler(Object handler) {
+        for (var method : handler.getClass().getMethods()) {
+            if (method.getParameterCount() != 1 || method.isSynthetic()) {
+                continue;
+            }
+            Class<?> param = method.getParameterTypes()[0];
+            if (!YsmEvent.class.isAssignableFrom(param)) {
+                continue;
+            }
+            @SuppressWarnings("unchecked")
+            Class<YsmEvent> eventType = (Class<YsmEvent>) param;
+            register(eventType, event -> {
+                try {
+                    method.invoke(handler, event);
+                } catch (ReflectiveOperationException e) {
+                    throw new RuntimeException("Failed to invoke event handler method " + method, e);
+                }
+            });
+        }
+    }
+
     @SuppressWarnings("unchecked")
     public static <T> T post(T event) {
         List<Consumer<?>> listeners = LISTENERS.get(event.getClass());

@@ -1,0 +1,146 @@
+package com.elfmcys.ysm.client.gui;
+
+import com.elfmcys.ysm.client.animation.molang.PhysicsManager;
+import com.elfmcys.ysm.client.entity.CustomPlayerEntity;
+import com.elfmcys.ysm.client.entity.IPreviewEntity;
+import com.elfmcys.ysm.client.event.ClientTickEvent;
+import com.elfmcys.ysm.client.model.ModelRenderTargetLease;
+import com.elfmcys.ysm.geckolib3.core.event.predicate.AnimationEvent;
+import com.elfmcys.ysm.geckolib3.core.molang.context.DebugSource;
+import com.elfmcys.ysm.geckolib3.geo.GeoRenderData;
+import com.elfmcys.ysm.geckolib3.geo.RenderContext;
+import com.mojang.authlib.GameProfile;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.world.entity.player.Player;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.UUID;
+
+public final class CustomGuiPlayerEntity extends CustomPlayerEntity implements IPreviewEntity {
+    private final PreviewAnimationInfo guiAnimationInfo;
+    private boolean allowEmitting;
+    private volatile boolean released;
+
+    public CustomGuiPlayerEntity() {
+        super(new FakePlayer(), false, false);
+        guiAnimationInfo = new PreviewAnimationInfo();
+        // 界面预览实体不在世界里，没人给它逐帧 tick，
+        // 模型加载完成后就永远不会被应用（格子卡片一直空白）
+        com.elfmcys.ysm.client.animation.AnimationParallelTicker.add(this);
+    }
+
+    /**
+     * 卡片关闭后调用：让逐帧 ticker 把本实体移出列表并释放资源。
+     */
+    public void release() {
+        released = true;
+        reset();
+    }
+
+    @Override
+    public void reset() {
+        guiAnimationInfo.setFocus("");
+        guiAnimationInfo.setPreview("");
+        guiAnimationInfo.setHover("");
+        allowEmitting = false;
+        super.reset();
+    }
+
+    @Override
+    public boolean determineImmutableContext(RenderContext context) {
+        // 预览实体必须每帧重新提取骨骼状态：卡片预览在渲染前会临时改写实体的朝向
+        // （yBodyRot/yRot 等），若走"不可变"缓存，取到的会是旧朝向，表现为模型永远背对镜头
+        return false;
+    }
+
+    @Override
+    public @NotNull PreviewAnimationInfo getPreviewInfo() {
+        return guiAnimationInfo;
+    }
+
+    @Override
+    public PhysicsManager getPhysicsManager(AnimationEvent<?> event) {
+        return physicsManager;
+    }
+
+    @Override
+    public void setAllowEmitting(boolean value) {
+        this.allowEmitting = value;
+    }
+
+    @Override
+    public boolean isActive() {
+        // release() 后由 AnimationParallelTicker 移除并 reset（关闭租约、释放模型）
+        return !released;
+    }
+
+    @Override
+    protected boolean allowEmitting() {
+        return allowEmitting;
+    }
+
+    @Override
+    public int getFrameRateLimit() {
+        return ClientTickEvent.getRefreshRate();
+    }
+
+    @Override
+    public boolean isFakePlayer() {
+        return true;
+    }
+
+    @Override
+    protected GeoRenderData update(float partialTicks, RenderContext context) {
+        if (entity instanceof FakePlayer fakePlayer && !fakePlayer.updateClientLevel()) {
+            return null;
+        }
+        return super.update(partialTicks, context);
+    }
+
+    public static boolean isFakePlayer(Player player) {
+        return player instanceof FakePlayer;
+    }
+
+    @Override
+    public DebugSource getDebugSource() {
+        return null;
+    }
+
+    @Override
+    protected @NotNull HumanoidResourceHolder createResourceHolder(ModelRenderTargetLease lease, boolean isFallback) {
+        return new HumanoidResourceHolder(lease, isFallback, false, true, 15 * 20);
+    }
+
+    private static class FakePlayer extends AbstractClientPlayer {
+        @SuppressWarnings("DataFlowIssue")
+        public FakePlayer() {
+            super(Minecraft.getInstance().level, createRandomGameProfile());
+        }
+
+        private static GameProfile createRandomGameProfile() {
+            var uuid = UUID.randomUUID();
+            return new GameProfile(uuid, "ysm_" + uuid.toString().replace('-', '_'));
+        }
+
+        @Override
+        public boolean isSpectator() {
+            return false;
+        }
+
+        @Override
+        public boolean isCreative() {
+            return false;
+        }
+
+        public boolean updateClientLevel() {
+            var level = Minecraft.getInstance().level;
+            if (level != null) {
+                this.setLevel(level);
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+}

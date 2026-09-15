@@ -2,6 +2,8 @@ package com.elfmcys.ysm.model.source;
 
 public final class ModelSources {
     public static final SourceId LOCAL_CUSTOM = new SourceId("local.custom");
+    /** 旧版 config/yes_steve_model/custom 目录：来源 id 必须与 local.custom 区分，否则聚合器报重复 */
+    public static final SourceId LOCAL_CUSTOM_LEGACY = new SourceId("local.custom.legacy");
     public static final SourceId LOCAL_AUTH = new SourceId("local.auth");
     public static final SourceId BUILTIN = new SourceId("builtin");
     public static final SourceId GAME_SERVER = new SourceId("game-server");
@@ -16,6 +18,7 @@ public final class ModelSources {
 
     public static int defaultPriority(SourceId sourceId) {
         if (sourceId.equals(LOCAL_CUSTOM)) return LOCAL_CUSTOM_PRIORITY;
+        if (sourceId.equals(LOCAL_CUSTOM_LEGACY)) return LOCAL_CUSTOM_PRIORITY;
         if (sourceId.equals(LOCAL_AUTH)) return LOCAL_AUTH_PRIORITY;
         if (sourceId.equals(BUILTIN)) return BUILTIN_PRIORITY;
         if (sourceId.equals(GAME_SERVER)) return GAME_SERVER_PRIORITY;

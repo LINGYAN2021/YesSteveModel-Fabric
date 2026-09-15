@@ -33,8 +33,7 @@ public class NativeRenderer {
         }
 
         var result = nRender(bufferObj, bufferFlags, matBuffer.ptr(), modelState.get(),
-                lightAndOverlay, packColor(color), flags, IrisCompat.getEntityId());
-        if (result) {
+                lightAndOverlay, packColor(color), flags, IrisCompat.getEntityId());        if (result) {
             if (isUnknownType || vb.region == null) {
                 FallbackVertexWriter.write(vertexConsumer, vertexCount, overlay);
             } else if (vb.accessor != null) {
@@ -42,6 +41,7 @@ public class NativeRenderer {
             }
         }
     }
+
 
     @SuppressWarnings("resource")
     private static VertexBuffer setupVertexConsumer(VertexConsumer vertexConsumer, int vertexCount) {
@@ -64,10 +64,18 @@ public class NativeRenderer {
     @Aligned(64)
     public static NativeBuffer getMatBuffer(PoseStack.Pose pose) {
         var buffer = MatBufferHolder.BUFFER;
-        var buf = buffer.nio();
+        // JOML 按 buffer 的字节序写入；n 侧按原生小端读取，必须切到 nativeOrder
+        var buf = buffer.nio().order(java.nio.ByteOrder.nativeOrder());
 
         var view = RenderSystem.getModelViewMatrix();
+        // 当前投影矩阵附带在 RenderSystem 的 slice 上（关卡透视/PiP 正交均覆盖）；
+        // 拿不到时退回 renderLevel 捕获的矩阵
         var proj = ProjectionMatrixHolder.get();
+        var projSlice = RenderSystem.getProjectionMatrixBuffer();
+        if (projSlice != null && ((Object) projSlice) instanceof ProjectionMatrixCarrier carrier
+                && carrier.ysm$getProjectionMatrix() != null) {
+            proj = carrier.ysm$getProjectionMatrix();
+        }
 
         pose.pose().get(buf);
         view.get(64, buf);

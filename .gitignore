@@ -21,6 +21,12 @@ build
 
 # native
 /src/main/resources/META-INF/native/*
+# YesSteveModel-Native 的构建产物（11 MB 二进制，每次编译都变，不入库）
+# 需要时从 native 源码仓库构建后放到这里，或用 YSM_NATIVE_PATH / local.properties 指定绝对路径
+/native/
+
+# 构建期生成的资源，由 processResources 依赖的 generateBuiltinModelIndex 任务重建
+/src/generated/
 
 # other
 eclipse

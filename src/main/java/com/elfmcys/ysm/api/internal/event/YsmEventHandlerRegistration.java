@@ -36,6 +36,30 @@ final class YsmEventHandlerRegistration {
                 checkResult.coverageComplete, checkResult.issues);
     }
 
+    /** Fabric 入口点直接给实例，仅做 checker 校验 */
+    static Outcome prepareChecked(Object handler) throws Failure {
+        String handlerBinaryName = handler.getClass().getName();
+        String checkerBinaryName = checkerBinaryName(handlerBinaryName);
+        ClassLoader loader = handler.getClass().getClassLoader();
+        Class<?> checker;
+        try {
+            checker = Class.forName(checkerBinaryName, true, loader);
+        } catch (ClassNotFoundException exception) {
+            throw new Failure(Stage.CHECKER_MISSING, checkerBinaryName,
+                    "Generated compatibility checker is missing.", exception);
+        } catch (LinkageError | RuntimeException exception) {
+            throw new Failure(Stage.CHECKER_LOAD, checkerBinaryName,
+                    "Cannot load the generated compatibility checker.", exception);
+        }
+        CheckResult checkResult = invokeCheck(checker, checkerBinaryName);
+        if (!checkResult.compatible) {
+            return new Outcome(null, checkerBinaryName, checkResult.status,
+                    checkResult.coverageComplete, checkResult.issues);
+        }
+        return new Outcome(handler, checkerBinaryName, checkResult.status,
+                checkResult.coverageComplete, checkResult.issues);
+    }
+
     static String checkerBinaryName(String handlerBinaryName) {
         int packageSeparator = handlerBinaryName.lastIndexOf('.');
         String packageName = packageSeparator < 0

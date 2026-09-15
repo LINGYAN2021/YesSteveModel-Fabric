@@ -1,0 +1,241 @@
+package com.elfmcys.ysm.network.fabric;
+
+import com.elfmcys.ysm.capability.AuthModelsCapabilityProvider;
+import com.elfmcys.ysm.capability.ModelInfoCapabilityProvider;
+import com.elfmcys.ysm.capability.StarModelsCapabilityProvider;
+import com.elfmcys.ysm.client.model.ClientModelService;
+import com.elfmcys.ysm.model.server.ServerModelService;
+import com.elfmcys.ysm.network.NetworkHandler;
+import com.elfmcys.ysm.network.protocol.PeerProtocolProfile;
+import com.elfmcys.ysm.network.protocol.ProtocolVersion;
+import com.elfmcys.ysm.network.protocol.ProtocolLimits;
+import com.elfmcys.ysm.network.protocol.ProtocolProfiles;
+import com.elfmcys.ysm.network.protocol.ProtocolPolicies;
+import com.elfmcys.ysm.network.protocol.PlayerIdTransmissionMode;
+import com.elfmcys.ysm.network.protocol.DefaultAnimationNegotiation;
+import com.elfmcys.ysm.proto.network.protocol.v0.HandshakeV0;
+import com.elfmcys.ysm.config.ServerConfig;
+import com.elfmcys.ysm.YesSteveModel;
+import com.elfmcys.ysm.model.ModelRuntime;
+import com.elfmcys.ysm.model.catalog.DefaultAnimationKey;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.network.chat.Component;
+import com.elfmcys.ysm.client.network.ClientControlHooks;
+import net.minecraft.server.level.ServerPlayer;
+
+import java.util.Set;
+import com.elfmcys.ysm.capability.fabric.EntityCapabilityHolder;
+
+public final class HandshakeHandler {
+    private HandshakeHandler() {
+    }
+
+    public static HandshakeV0.ServerHello createServerHello() {
+        var reportPolicy = HandshakeV0.PlayerStateReportPolicy.newInstance()
+                .setMinDeltaIntervalMs(50)
+                .setFullSnapshotIntervalMs(30_000)
+                .addRequestedSections(HandshakeV0.PlayerStateSection.PLAYER_STATE_SECTION_ANIMATION);
+        if (!ServerConfig.LOW_BANDWIDTH_USAGE.get()) {
+            reportPolicy.addRequestedSections(HandshakeV0.PlayerStateSection.PLAYER_STATE_SECTION_ROAMING);
+        }
+        var result = HandshakeV0.ServerHello.newInstance()
+                .setProtocolVersion(ProtocolVersion.CURRENT)
+                .addEnabledFeatureIds(ProtocolVersion.ASSET_TRANSFER_RELEASE_FEATURE_ID)
+                .setImplementationVersion(implementationVersion())
+                .setReceiveLimits(createLimits())
+                .setStateReportPolicy(reportPolicy)
+                .setEntityRefPolicy(HandshakeV0.EntityRefPolicy.newInstance()
+                        .setPlayerIdMode(HandshakeV0.PlayerIdMode.PLAYER_ID_MODE_FORBIDDEN));
+        addAnimationNames(result::addRequiredDefaultAnimations,
+                defaultAnimationNames());
+        return result;
+    }
+
+    public static void sendServerHello(ServerPlayer player) {
+        var hello = createServerHello();
+        GameServerPlayerStateSession.offer(((com.elfmcys.ysm.mixin.ServerCommonPacketListenerAccessor) player.connection).ysm$getConnection(),
+                ProtocolPolicies.fromServerHello(hello));
+        NetworkHandler.sendToClientPlayer(hello, player);
+    }
+
+    public static HandshakeV0.ClientHello createClientHello() {
+        var result = HandshakeV0.ClientHello.newInstance()
+                .setProtocolVersion(ProtocolVersion.CURRENT)
+                .addSupportedFeatureIds(ProtocolVersion.ASSET_TRANSFER_RELEASE_FEATURE_ID)
+                .setImplementationVersion(implementationVersion())
+                .setReceiveLimits(createLimits());
+        addAnimationNames(result::addAvailableDefaultAnimations,
+                defaultAnimationNames());
+        return result;
+    }
+
+    public static void handleServerHello(HandshakeV0.ServerHello message,
+                                         YsmNetContext context) {
+        if (!message.getProtocolVersion().equals(ProtocolVersion.CURRENT)) {
+            context.connection().disconnect(Component.literal(
+                    "YSM protocol version is incompatible: expected "
+                            + ProtocolVersion.CURRENT));
+            return;
+        }
+        final PeerProtocolProfile profile;
+        try {
+            profile = ProtocolProfiles.fromServerHello(message);
+        } catch (IllegalArgumentException error) {
+            context.connection().disconnect(Component.literal(
+                    "YSM server sent invalid protocol limits"));
+            return;
+        }
+        if (!ProtocolVersion.supportsRequiredFeatures(profile)) {
+            context.connection().disconnect(Component.literal(
+                    "YSM server does not support required asset transfer release credits"));
+            return;
+        }
+        final Set<DefaultAnimationKey> missing;
+        try {
+            missing = DefaultAnimationNegotiation.missing(
+                    message.getRequiredDefaultAnimations(), defaultAnimationNames());
+        } catch (IllegalArgumentException error) {
+            context.connection().disconnect(Component.literal(
+                    "YSM server sent an invalid default animation contract"));
+            return;
+        }
+        if (!missing.isEmpty()) {
+            context.connection().disconnect(Component.literal(
+                    "YSM default animation contract is incomplete; missing "
+                            + summarize(missing)));
+            return;
+        }
+        final com.elfmcys.ysm.network.protocol.NegotiatedSessionPolicy policy;
+        try {
+            policy = ProtocolPolicies.fromServerHello(message);
+        } catch (IllegalArgumentException error) {
+            return;
+        }
+        if (policy.playerIdMode() != PlayerIdTransmissionMode.FORBIDDEN) {
+            return;
+        }
+        if (!ClientSessionRuntime.acceptGameServer(profile, policy)) {
+            return;
+        }
+        NetworkHandler.setPeerProfile(context.connection(), profile);
+        NetworkHandler.setChannelVersion(context.connection(), ProtocolVersion.TRANSPORT_VERSION);
+        warnVersionDifference(message.getImplementationVersion(), false);
+        context.enqueueWork(() -> ClientModelService.instance().serverHandshake());
+        NetworkHandler.sendToServer(createClientHello());
+    }
+
+    public static void handleClientHello(HandshakeV0.ClientHello message,
+                                         YsmNetContext context) {
+        var player = context.sender();
+        if (player == null) {
+            return;
+        }
+        if (!message.getProtocolVersion().equals(ProtocolVersion.CURRENT)) {
+            player.connection.disconnect(Component.literal(
+                    "YSM protocol version is incompatible: expected "
+                            + ProtocolVersion.CURRENT));
+            return;
+        }
+        final PeerProtocolProfile profile;
+        try {
+            profile = ProtocolProfiles.fromClientHello(message);
+        } catch (IllegalArgumentException error) {
+            player.connection.disconnect(Component.literal(
+                    "YSM client sent invalid protocol limits"));
+            return;
+        }
+        if (!ProtocolVersion.supportsRequiredFeatures(profile)) {
+            player.connection.disconnect(Component.literal(
+                    "YSM client does not support required asset transfer release credits"));
+            return;
+        }
+        final Set<DefaultAnimationKey> missing;
+        try {
+            missing = DefaultAnimationNegotiation.missing(
+                    defaultAnimationNames(), message.getAvailableDefaultAnimations());
+        } catch (IllegalArgumentException error) {
+            player.connection.disconnect(Component.literal(
+                    "YSM client sent an invalid default animation contract"));
+            return;
+        }
+        if (!missing.isEmpty()) {
+            player.connection.disconnect(Component.literal(
+                    "YSM client is missing required default animations: "
+                            + summarize(missing)));
+            return;
+        }
+        var stateSession = GameServerPlayerStateSession.offered(context.connection()).orElse(null);
+        if (stateSession == null) {
+            return;
+        }
+        warnVersionDifference(message.getImplementationVersion(), true);
+        try {
+            if (!NetworkHandler.setPeerProfile(context.connection(), profile)
+                    || !NetworkHandler.setChannelVersion(context.connection(), ProtocolVersion.TRANSPORT_VERSION)) {
+                return;
+            }
+        } catch (IllegalArgumentException error) {
+            return;
+        }
+        if (!stateSession.activate()) {
+            return;
+        }
+        context.enqueueWork(() -> {
+            EntityCapabilityHolder.get(player, ModelInfoCapabilityProvider.MODEL_INFO_CAP).ifPresent(capability -> {
+                capability.setMandatory(false);
+                capability.applyClientAnimation("");
+            });
+            PlayerStateHandler.sendAuthoritativeFull(player, false);
+            EntityCapabilityHolder.get(player, AuthModelsCapabilityProvider.AUTH_MODELS_CAP).ifPresent(capability ->
+                    NetworkHandler.sendToClientPlayer(ControlHandler.authorizedModels(capability.getAuthModels(), 1), player));
+            EntityCapabilityHolder.get(player, StarModelsCapabilityProvider.STAR_MODELS_CAP).ifPresent(capability ->
+                    NetworkHandler.sendToClientPlayer(ControlHandler.starredModels(capability.getStarModels(), 1), player));
+            ServerModelService.instance().sendCatalog(player);
+        });
+    }
+
+    private static HandshakeV0.ProtocolLimits createLimits() {
+        return HandshakeV0.ProtocolLimits.newInstance()
+                .setMaxMessageBytes(ProtocolLimits.MAX_MESSAGE_BYTES)
+                .setMaxFragmentBytes(ProtocolLimits.MAX_FRAGMENT_BYTES)
+                .setMaxInFlightTransfers(ProtocolLimits.MAX_IN_FLIGHT_TRANSFERS)
+                .setMaxEncodedAssetBytes(ProtocolLimits.MAX_ENCODED_ASSET_BYTES)
+                .setMaxDecodedAssetBytes(ProtocolLimits.MAX_DECODED_ASSET_BYTES);
+    }
+
+    private static void addAnimationNames(
+            java.util.function.Consumer<HandshakeV0.AnimationName> output,
+            Set<DefaultAnimationKey> names) {
+        names.stream().sorted().forEach(key -> output.accept(
+                HandshakeV0.AnimationName.newInstance()
+                        .setDomain(key.domain()).setName(key.name())));
+    }
+
+    private static Set<DefaultAnimationKey> defaultAnimationNames() {
+        return ModelRuntime.system().builtinContract().defaultAnimationNames();
+    }
+
+    private static String summarize(Set<DefaultAnimationKey> missing) {
+        var values = missing.stream().sorted().limit(5).map(key ->
+                key.domain() + ":" + key.name()).toList();
+        return values + (missing.size() > values.size()
+                ? " and " + (missing.size() - values.size()) + " more" : "");
+    }
+
+    private static String implementationVersion() {
+        return FabricLoader.getInstance().getModContainer(YesSteveModel.MOD_ID).map(container -> container.getMetadata().getVersion().getFriendlyString()).orElse("unknown");
+    }
+
+    private static void warnVersionDifference(String peerVersion, boolean clientIsPeer) {
+        var local = implementationVersion();
+        if (local.equals(peerVersion)) {
+            return;
+        }
+        YesSteveModel.LOGGER.warn(
+                "YSM version difference accepted after animation-name coverage check: local={}, peer={}",
+                local, peerVersion);
+        if (!clientIsPeer) {
+            ClientControlHooks.showVersionMismatch(local, peerVersion);
+        }
+    }
+}
