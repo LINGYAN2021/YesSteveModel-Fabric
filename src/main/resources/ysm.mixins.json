@@ -28,7 +28,8 @@
     "client.ThrowableItemProjectileAccessor",
     "client.NativeImageAccessor",
     "client.ScreenAccessor",
-    "client.BufferBuilderMixin"
+    "client.BufferBuilderMixin",
+    "client.ItemInHandRendererMixin"
   ],
   "mixins": [
     "AbstractArrowEntityMixin",

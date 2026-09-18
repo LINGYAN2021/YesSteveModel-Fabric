@@ -4,7 +4,7 @@
     "subtitle": "subtitle.yes_steve_model.custom",
     "sounds": [
       {
-        "name": "yes_steve_model:empty",
+        "name": "ysm:empty",
         "preload": false,
         "stream": true
       }
