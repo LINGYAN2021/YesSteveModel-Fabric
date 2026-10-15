@@ -6,7 +6,6 @@ import com.elfmcys.ysm.capability.fabric.EntityCapabilityHolder;
 import com.elfmcys.ysm.client.entity.CustomFirstPersonArmEntity;
 import com.elfmcys.ysm.geckolib3.geo.GeoEntityRenderer;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
@@ -27,15 +26,13 @@ import net.minecraft.client.renderer.state.level.CameraRenderState;
  */
 public class CustomFirstPersonArmRenderer extends GeoEntityRenderer<LocalPlayer, CustomFirstPersonArmEntity> {
     /**
-     * 相机位于眼位、朝向 -Z。手臂模型以脚底为原点建模，
-     * 所以要先下移一个肩高，把肩膀带到相机位置。
+     * 相机位于眼位、朝向 -Z。手臂模型与主模型同属"脚底为原点、16 单位/格"的空间，
+     * 肩部枢轴在模型内 y≈1.86 格处（LeftArm/RightArm pivot = ±1.15, 29.775, 0），
+     * 所以要把肩膀带到相机高度：下移约一个肩高，再往前推离近裁剪面。
      */
-    private static final float ARM_Y = -1.5F;
-
-    /**
-     * 略微前移，避免与近裁剪面相交
-     */
-    private static final float ARM_Z = -0.1F;
+    private static final float ARM_X = 0.0F;
+    private static final float ARM_Y = -1.6F;
+    private static final float ARM_Z = -0.8F;
 
     private CustomFirstPersonArmEntity armEntity;
 
@@ -93,9 +90,10 @@ public class CustomFirstPersonArmRenderer extends GeoEntityRenderer<LocalPlayer,
 
         poseStack.pushPose();
         try {
-            poseStack.translate(0.0F, ARM_Y, ARM_Z);
-            // 原版实现里的翻转：模型按面朝 +Z 建模，第一人称需要翻到面向相机
-            poseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
+            poseStack.translate(ARM_X, ARM_Y, ARM_Z);
+            // 不加额外的 Z/Y 翻转：GUI 预览里的 Z180 是 PiP 正交投影的 Y 轴补偿，
+            // 第一人称不经那条路径；朝向由 GeoEntityRenderer 的 (180 - yaw) 负责，
+            // 传 180 时该旋转为 0，模型保持"面朝 -Z"的建模朝向，正对相机前方。
             drawnThisFrame = false;
             render(armEntity, 180.0F, partialTick, poseStack, collector, packedLight,
                     new CameraRenderState());
