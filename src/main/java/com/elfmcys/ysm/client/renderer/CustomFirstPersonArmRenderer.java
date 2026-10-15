@@ -38,9 +38,11 @@ public class CustomFirstPersonArmRenderer extends GeoEntityRenderer<LocalPlayer,
     private static final float ARM_Z = 0.0F;
 
     /**
-     * 传给渲染器的 yaw：180 使 (180 - yaw) 为 0，即不加额外旋转
+     * 传给渲染器的 yaw。渲染器会做 (180 - yaw)，所以这里必须传 0，
+     * 让它翻转 180°：手臂模型的动画姿态是朝 +Z 伸出的（相机看向 -Z），
+     * 不翻的话手臂会伸到相机身后、直接被近裁剪面裁掉，表现为"完全没有手"。
      */
-    private static final float ARM_YAW = 180.0F;
+    private static final float ARM_YAW = 0.0F;
 
     private CustomFirstPersonArmEntity armEntity;
 
