@@ -11,6 +11,7 @@ import com.elfmcys.ysm.task.TaskContext;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class CommonAssetView {
@@ -29,6 +30,13 @@ public class CommonAssetView {
         }
 
         this.stringsBlobId = commonAsset.hasStringsBlobId() ? commonAsset.getStringsBlobId() : 0;
+    }
+
+    /**
+     * 容器里声明的全部音频名，供加载阶段批量预读
+     */
+    public List<String> soundNames() {
+        return List.copyOf(sounds.keySet());
     }
 
     public CompletableFuture<@Nullable SoundStream> openSoundStream(TaskContext ctx, ChunkDataSource source, String soundName) {

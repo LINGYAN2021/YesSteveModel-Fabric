@@ -13,7 +13,9 @@ import com.elfmcys.ysm.client.model.data.ProjectileModelData;
 import com.elfmcys.ysm.client.model.data.RenderTargetData;
 import com.elfmcys.ysm.client.model.data.VehicleModelData;
 import com.elfmcys.ysm.client.model.internal.metadata.ManifestModelInfoMapper;
+import com.elfmcys.ysm.client.sound.data.SoundData;
 import com.elfmcys.ysm.client.texture.CustomPBRTextureSet;
+import com.elfmcys.ysm.natives.sound.SoundStream;
 import com.elfmcys.ysm.format.schema.file.AssetFileConstant;
 import com.elfmcys.ysm.format.schema.file.ChunkDataSource;
 import com.elfmcys.ysm.format.schema.file.PBRImageSources;
@@ -42,6 +44,7 @@ import us.hebi.quickbuf.ProtoSource;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -96,14 +99,19 @@ public final class ModelRenderTargetLoader {
 
         final CompletableFuture<ModelDataOuterClass.ModelData> definition;
         final CompletableFuture<StringDataOuterClass.StringData> commonStrings;
+        final CompletableFuture<Map<String, SoundData>> commonSounds;
         try {
             definition = request.target().readDefinition(context, chunks);
             commonStrings = readCommonStrings(context, request.view(), chunks);
+            commonSounds = readCommonSounds(context, request.view(), chunks);
         } catch (RuntimeException e) {
             return CompletableFuture.failedFuture(e);
         }
-        return buildLoaded(context, definition.thenCombine(commonStrings, (modelData, strings) ->
-                new LoadedTarget(request, modelData, strings)));
+        return buildLoaded(context,
+                definition.thenCombine(commonStrings, (modelData, strings) ->
+                                new LoadedTarget(request, modelData, strings, Map.of()))
+                        .thenCombine(commonSounds, (loaded, sounds) -> new LoadedTarget(
+                                loaded.request(), loaded.definition(), loaded.commonStrings(), sounds)));
     }
 
     CompletableFuture<ModelRenderTarget> buildLoaded(TaskContext context,
@@ -127,6 +135,46 @@ public final class ModelRenderTargetLoader {
         return CompletableFuture.completedFuture(null);
     }
 
+    /**
+     * 预读容器里声明的全部音频。
+     *
+     * <p>客户端侧需要的是原始字节（{@code SoundData}），而分块数据源只在加载的第一阶段可用，
+     * 所以在这里一次读完；任何单个音频读取失败都只丢它自己，不影响整只模型。
+     */
+    private static CompletableFuture<Map<String, SoundData>> readCommonSounds(
+            TaskContext context, ModelFileView view, ChunkDataSource chunks) {
+        var names = view.getCommon().soundNames();
+        if (names.isEmpty()) {
+            return CompletableFuture.completedFuture(Map.of());
+        }
+        var futures = new ArrayList<CompletableFuture<Map.Entry<String, SoundData>>>(names.size());
+        for (var name : names) {
+            futures.add(view.getCommon().openSoundStream(context, chunks, name)
+                    .thenApply(stream -> stream == null ? null : Map.entry(name, toSoundData(stream))));
+        }
+        return CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new))
+                .thenApply(ignored -> {
+                    var result = new LinkedHashMap<String, SoundData>(futures.size());
+                    for (var future : futures) {
+                        var entry = future.join();
+                        if (entry != null) {
+                            result.put(entry.getKey(), entry.getValue());
+                        }
+                    }
+                    return Map.copyOf(result);
+                });
+    }
+
+    private static SoundData toSoundData(SoundStream stream) {
+        try (stream) {
+            var bytes = stream.input().readAllBytes();
+            return new SoundData(ByteBuffer.wrap(bytes), stream.format().id(),
+                    stream.sampleRate(), stream.samples());
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
     private static void requireActive(TaskContext context) {
         if (context.cancelled()) {
             throw new CancellationException("Model render target load was cancelled");
@@ -145,7 +193,7 @@ public final class ModelRenderTargetLoader {
     }
 
     record LoadedTarget(LoadRequest request, ModelDataOuterClass.ModelData definition,
-                        StringDataOuterClass.StringData commonStrings) {
+                        StringDataOuterClass.StringData commonStrings, Map<String, SoundData> sounds) {
     }
 
     private record DefaultBuildStage(BakedModelCache bakedModels, BakedAnimationCache bakedAnimations,
@@ -164,8 +212,8 @@ public final class ModelRenderTargetLoader {
             var definition = input.definition();
             requireActive(context);
                     return buildNow(context, descriptor, view, target, textureProto, textureSources, targetId,
-                            selectedTexture, definition, input.commonStrings(), request.prewarmAnimations(),
-                            request.defaultModel(), request.resourceFailures());
+                            selectedTexture, definition, input.commonStrings(), input.sounds(),
+                            request.prewarmAnimations(), request.defaultModel(), request.resourceFailures());
         }
 
         private ModelRenderTarget buildNow(TaskContext context, ModelDescriptor descriptor, ModelFileView view,
@@ -173,6 +221,7 @@ public final class ModelRenderTargetLoader {
                                            PBRImageSources textureSources, String targetId, String selectedTexture,
                                             ModelDataOuterClass.ModelData definition,
                                             StringDataOuterClass.StringData commonStrings,
+                                            Map<String, SoundData> sounds,
                                             boolean prewarmAnimations,
                                             boolean defaultModel,
                                             ModelResourceFailures resourceFailures) throws IOException {
@@ -227,7 +276,7 @@ public final class ModelRenderTargetLoader {
                 default -> throw new IOException("Unsupported render target kind: " + target.kind());
                 }
 
-                var common = commonAssets(view, commonStrings);
+                var common = commonAssets(view, commonStrings, sounds);
                 var data = new ModelRenderTargetBuildInput(targetId, targetData, common,
                         ManifestModelInfoMapper.map(descriptor.modelHash(), view.getManifest()));
                 var result = ModelRenderTargetAssembler.build(descriptor.modelHash(), data);
@@ -238,7 +287,8 @@ public final class ModelRenderTargetLoader {
         }
 
         private static CommonAssetData commonAssets(ModelFileView view,
-                                                    StringDataOuterClass.StringData source) {
+                                                    StringDataOuterClass.StringData source,
+                                                    Map<String, SoundData> sounds) {
             var functions = new Object2ReferenceOpenHashMap<String,
                     IValue>();
             if (source != null && source.hasUserFunctions()) {
@@ -262,7 +312,7 @@ public final class ModelRenderTargetLoader {
                     languages.put(language.getLocale(), Map.copyOf(values));
                 }
             }
-            return new CommonAssetData(Map.of(), functions, Map.copyOf(languages));
+            return new CommonAssetData(sounds, functions, Map.copyOf(languages));
         }
 
         private static Map<String, AnimationControllerFile> controllerFiles(

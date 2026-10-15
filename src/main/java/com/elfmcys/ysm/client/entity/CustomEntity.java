@@ -9,6 +9,7 @@ import com.elfmcys.ysm.client.model.ModelRenderTarget;
 import com.elfmcys.ysm.client.model.ClientModelService;
 import com.elfmcys.ysm.client.model.ModelRenderTargetLease;
 import com.elfmcys.ysm.client.sound.data.ModelSoundHolder;
+import com.elfmcys.ysm.client.sound.data.SoundDataManager;
 import com.elfmcys.ysm.client.sound.stream.AudioStreamProvider;
 import com.elfmcys.ysm.geckolib3.core.event.predicate.AnimationEvent;
 import com.elfmcys.ysm.geckolib3.core.molang.context.DebugSource;
@@ -23,6 +24,7 @@ import com.elfmcys.ysm.model.domain.RenderTargetIds;
 import com.elfmcys.ysm.util.ThreadTools;
 import com.elfmcys.ysm.util.UnsafeUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.Nullable;
 
@@ -152,6 +154,16 @@ public abstract class CustomEntity<T extends Entity> extends AnimatableEntity<T>
             return;
         }
         resourceHolder.soundHolder = null;
+        // SoundDataManager.register 要求渲染线程；异步更新路径下退到主线程补登记
+        if (RenderSystem.isOnRenderThread()) {
+            resourceHolder.soundHolder = SoundDataManager.register(newModel);
+        } else {
+            Minecraft.getInstance().execute(() -> {
+                if (resourceHolder.isCurrent()) {
+                    resourceHolder.soundHolder = SoundDataManager.register(newModel);
+                }
+            });
+        }
         deferHandler = newModel.assets().eventHandlers().get(MolangEventWrapper.DEFER);
     }
 
@@ -203,7 +215,19 @@ public abstract class CustomEntity<T extends Entity> extends AnimatableEntity<T>
 
     @Override
     public Optional<AudioStreamProvider> getSoundStream(String name) {
-        return Optional.empty();
+        var resourceHolder = getResourceHolder();
+        if (resourceHolder == null) {
+            return Optional.empty();
+        }
+        var holder = resourceHolder.soundHolder;
+        if (holder == null) {
+            return Optional.empty();
+        }
+        var soundData = resourceHolder.model.assets().sounds().get(name);
+        if (soundData == null) {
+            return Optional.empty();
+        }
+        return Optional.of(() -> holder.openStream(soundData));
     }
 
     @Override

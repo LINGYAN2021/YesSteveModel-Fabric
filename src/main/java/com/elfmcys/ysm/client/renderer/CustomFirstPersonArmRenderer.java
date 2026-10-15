@@ -49,6 +49,18 @@ public class CustomFirstPersonArmRenderer extends GeoEntityRenderer<LocalPlayer,
      */
     private boolean drawnThisFrame;
 
+    /**
+     * 临时诊断：每种结果只报一次，用来定位第一人称手臂卡在哪一步
+     */
+    private static final java.util.Set<String> LOGGED_OUTCOMES =
+            java.util.concurrent.ConcurrentHashMap.newKeySet();
+
+    private static void diag(String outcome) {
+        if (LOGGED_OUTCOMES.add(outcome)) {
+            com.elfmcys.ysm.YesSteveModel.LOGGER.info("[YSM-ARM] {}", outcome);
+        }
+    }
+
     public CustomFirstPersonArmRenderer() {
         super(YsmRendererContexts.get());
     }
@@ -65,6 +77,7 @@ public class CustomFirstPersonArmRenderer extends GeoEntityRenderer<LocalPlayer,
         PlayerAnimatableCapability cap = EntityCapabilityHolder
                 .get(player, PlayerAnimatableCapabilityProvider.CAP).orElse(null);
         if (cap == null || cap.getModelRenderTarget() == null || player.isInvisible()) {
+            diag("skip: no capability / no render target / player invisible");
             return false;
         }
 
@@ -74,6 +87,7 @@ public class CustomFirstPersonArmRenderer extends GeoEntityRenderer<LocalPlayer,
         armEntity.checkModelUpdate();
         if (armEntity.getLoadedGeoModel() == null || armEntity.getModelRenderTarget() == null) {
             // 模型还在加载：让原版手臂先顶着
+            diag("skip: arm model not ready yet");
             return false;
         }
 
@@ -103,10 +117,12 @@ public class CustomFirstPersonArmRenderer extends GeoEntityRenderer<LocalPlayer,
                        CameraRenderState cameraState) {
         var data = animatable.update(partialTick);
         if (data == null || !data.modelState.isValid()) {
+            diag("skip: render data null or model state invalid");
             return;
         }
         super.render(animatable, yaw, partialTick, poseStack, collector, packedLight, cameraState);
         drawnThisFrame = true;
+        diag("drew custom arm");
     }
 
     public boolean shouldHideVanillaArm() {
