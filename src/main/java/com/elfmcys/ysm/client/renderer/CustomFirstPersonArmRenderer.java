@@ -27,13 +27,30 @@ import net.minecraft.client.renderer.state.level.CameraRenderState;
  */
 public class CustomFirstPersonArmRenderer extends GeoEntityRenderer<LocalPlayer, CustomFirstPersonArmEntity> {
     /**
-     * 相机位于眼位、朝向 -Z。手臂模型与主模型同属"脚底为原点、16 单位/格"的空间，
-     * 肩部枢轴在模型内 y≈1.86 格处（LeftArm/RightArm pivot = ±1.15, 29.775, 0），
-     * 所以要把肩膀带到相机高度：下移约一个肩高，再往前推离近裁剪面。
+     * 相机位于眼位（右手系：+X 右、+Y 上、-Z 前方）。
+     * 手臂模型与主模型同属"脚底为原点、16 单位/格"的空间，肩部枢轴在模型内
+     * y≈1.86 格处（LeftArm/RightArm pivot = ±1.15, 29.775, 0），所以要把肩膀
+     * 带到相机高度：下移约一个肩高，再往前推离近裁剪面。
      */
-    private static final float ARM_X = 0.0F;
-    private static final float ARM_Y = -1.6F;
-    private static final float ARM_Z = -0.8F;
+    private static final float ARM_X = 0.45F;
+    private static final float ARM_Y = -0.75F;
+    private static final float ARM_Z = -0.85F;
+
+    /**
+     * 模型建模时正面朝 +Z（与相机同向的是 -Z），不翻的话手臂会正对镜头伸过来
+     * （只能看到袖口端面）
+     */
+    private static final float ARM_FLIP_YAW = 180.0F;
+
+    /**
+     * 从角落朝屏幕中央偏，避免手臂顶在画面正中
+     */
+    private static final float ARM_INWARD_YAW = 55.0F;
+
+    /**
+     * 抬手，让手朝屏幕中央而不是垂在角落
+     */
+    private static final float ARM_PITCH = 20.0F;
 
     private CustomFirstPersonArmEntity armEntity;
 
@@ -92,10 +109,10 @@ public class CustomFirstPersonArmRenderer extends GeoEntityRenderer<LocalPlayer,
         poseStack.pushPose();
         try {
             poseStack.translate(ARM_X, ARM_Y, ARM_Z);
-            // 模型建模时正面朝 +Z（与相机同向的是 -Z），不转的话渲染出来是
-            // "手臂正对着镜头伸过来"（只能看到袖口端面）；绕 Y 转 180° 把正面翻到
-            // 与相机同向，手臂才会朝屏幕里伸出。
-            poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
+            // 先把模型正面翻到与相机同向（180），再整体向内偏，让手臂从右下角
+            // 斜着朝屏幕中央伸出；最后抬手，避免手垂在画面外
+            poseStack.mulPose(Axis.YP.rotationDegrees(ARM_FLIP_YAW + ARM_INWARD_YAW));
+            poseStack.mulPose(Axis.XP.rotationDegrees(ARM_PITCH));
             drawnThisFrame = false;
             render(armEntity, 180.0F, partialTick, poseStack, collector, packedLight,
                     new CameraRenderState());
