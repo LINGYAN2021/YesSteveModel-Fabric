@@ -6,6 +6,7 @@ import com.elfmcys.ysm.capability.fabric.EntityCapabilityHolder;
 import com.elfmcys.ysm.client.entity.CustomFirstPersonArmEntity;
 import com.elfmcys.ysm.geckolib3.geo.GeoEntityRenderer;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
@@ -91,9 +92,10 @@ public class CustomFirstPersonArmRenderer extends GeoEntityRenderer<LocalPlayer,
         poseStack.pushPose();
         try {
             poseStack.translate(ARM_X, ARM_Y, ARM_Z);
-            // 不加额外的 Z/Y 翻转：GUI 预览里的 Z180 是 PiP 正交投影的 Y 轴补偿，
-            // 第一人称不经那条路径；朝向由 GeoEntityRenderer 的 (180 - yaw) 负责，
-            // 传 180 时该旋转为 0，模型保持"面朝 -Z"的建模朝向，正对相机前方。
+            // 模型建模时正面朝 +Z（与相机同向的是 -Z），不转的话渲染出来是
+            // "手臂正对着镜头伸过来"（只能看到袖口端面）；绕 Y 转 180° 把正面翻到
+            // 与相机同向，手臂才会朝屏幕里伸出。
+            poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
             drawnThisFrame = false;
             render(armEntity, 180.0F, partialTick, poseStack, collector, packedLight,
                     new CameraRenderState());
