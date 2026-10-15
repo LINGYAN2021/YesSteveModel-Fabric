@@ -6,6 +6,7 @@ import com.elfmcys.ysm.capability.fabric.EntityCapabilityHolder;
 import com.elfmcys.ysm.client.entity.CustomFirstPersonArmEntity;
 import com.elfmcys.ysm.geckolib3.geo.GeoEntityRenderer;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
@@ -26,24 +27,14 @@ import net.minecraft.client.renderer.state.level.CameraRenderState;
  */
 public class CustomFirstPersonArmRenderer extends GeoEntityRenderer<LocalPlayer, CustomFirstPersonArmEntity> {
     /**
-     * 摆放完全照搬官方实现（从官方 2.6.5 的渲染类字节码里读出来的）：
-     * 官方在相机空间的姿态栈上只做了一句 {@code translate(0.0, -1.5, 0.0)}，
-     * 没有任何旋转、没有 X/Z 偏移，然后用专用手臂渲染模式绘制模型。
+     * 摆放参数放在 {@link ArmPoseState} 里，可用 {@code /ysmclient armpose} 在游戏内实时调整。
      *
-     * <p>所以这里也保持同样的极简做法。模型朝向由渲染器的 (180 - yaw) 负责，
-     * 传 180 时该旋转为 0，模型保持建模朝向，与官方一致。
+     * <p>默认值来自官方实现（读官方 2.6.5 渲染类字节码得到）：官方在相机空间的姿态栈上
+     * 只做了一句 {@code translate(0.0, -1.5, 0.0)}，没有旋转、没有 X/Z 偏移。
+     *
+     * <p>唯一与官方不同的是朝向：渲染器会做 {@code (180 - yaw)}，默认传 0 让它翻转 180°。
+     * 手臂模型的动画姿态朝 +Z 伸出，而相机看向 -Z，不翻的话手臂会伸到相机身后被近裁剪面裁掉。
      */
-    private static final float ARM_X = 0.0F;
-    private static final float ARM_Y = -1.5F;
-    private static final float ARM_Z = 0.0F;
-
-    /**
-     * 传给渲染器的 yaw。渲染器会做 (180 - yaw)，所以这里必须传 0，
-     * 让它翻转 180°：手臂模型的动画姿态是朝 +Z 伸出的（相机看向 -Z），
-     * 不翻的话手臂会伸到相机身后、直接被近裁剪面裁掉，表现为"完全没有手"。
-     */
-    private static final float ARM_YAW = 0.0F;
-
     private CustomFirstPersonArmEntity armEntity;
 
     /**
@@ -100,9 +91,12 @@ public class CustomFirstPersonArmRenderer extends GeoEntityRenderer<LocalPlayer,
 
         poseStack.pushPose();
         try {
-            poseStack.translate(ARM_X, ARM_Y, ARM_Z);
+            poseStack.translate(ArmPoseState.x(), ArmPoseState.y(), ArmPoseState.z());
+            if (ArmPoseState.pitch() != 0.0F) {
+                poseStack.mulPose(Axis.XP.rotationDegrees(ArmPoseState.pitch()));
+            }
             drawnThisFrame = false;
-            render(armEntity, ARM_YAW, partialTick, poseStack, collector, packedLight,
+            render(armEntity, ArmPoseState.yaw(), partialTick, poseStack, collector, packedLight,
                     new CameraRenderState());
         } finally {
             poseStack.popPose();

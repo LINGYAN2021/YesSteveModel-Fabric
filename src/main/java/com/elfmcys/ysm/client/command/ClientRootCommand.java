@@ -44,6 +44,7 @@ public class ClientRootCommand {
         root.then(MolangCommand.get());
         root.then(SimpleWatchCommand.get());
         root.then(DebugCommand.get());
+        root.then(com.elfmcys.ysm.client.command.sub.ArmPoseCommand.get());
         dispatcher.register(root);
     }
 
