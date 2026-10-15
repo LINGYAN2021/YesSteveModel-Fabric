@@ -10,6 +10,7 @@ import com.mojang.math.Axis;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.world.entity.HumanoidArm;
 
 /**
  * 第一人称手臂渲染器。
@@ -27,14 +28,18 @@ import net.minecraft.client.renderer.state.level.CameraRenderState;
  */
 public class CustomFirstPersonArmRenderer extends GeoEntityRenderer<LocalPlayer, CustomFirstPersonArmEntity> {
     /**
-     * 相机位于眼位（右手系：+X 右、+Y 上、-Z 前方）。
-     * 手臂模型与主模型同属"脚底为原点、16 单位/格"的空间，肩部枢轴在模型内
-     * y≈1.86 格处（LeftArm/RightArm pivot = ±1.15, 29.775, 0），所以要把肩膀
-     * 带到相机高度：下移约一个肩高，再往前推离近裁剪面。
+     * 相机位于眼位（右手系：+X 右、+Y 上、-Z 前方）。手臂模型与主模型同属
+     * "脚底为原点、16 单位/格"的空间，肩部枢轴在模型内 y≈1.86 格、x≈±0.072 格
+     * （LeftArm/RightArm pivot = ±1.15, 29.775, 0）。
+     *
+     * <p>锚点直接取原版第一人称手臂的位置：原版 renderPlayerArm 里做的是
+     * {@code translate(side*0.64, -0.6, -0.72)} + 绕 Y {@code side*45°}。
+     * 把模型的肩部对齐到该锚点，反推出模型原点应放的位置，所以这里的
+     * X/Y 是"锚点减肩部枢轴"（0.64+0.05、-0.6-1.86、-0.72-0.05）。
      */
-    private static final float ARM_X = 0.45F;
-    private static final float ARM_Y = -0.75F;
-    private static final float ARM_Z = -0.85F;
+    private static final float ARM_X = 0.69F;
+    private static final float ARM_Y = -2.46F;
+    private static final float ARM_Z = -0.77F;
 
     /**
      * 模型建模时正面朝 +Z（与相机同向的是 -Z），不翻的话手臂会正对镜头伸过来
@@ -43,14 +48,9 @@ public class CustomFirstPersonArmRenderer extends GeoEntityRenderer<LocalPlayer,
     private static final float ARM_FLIP_YAW = 180.0F;
 
     /**
-     * 从角落朝屏幕中央偏，避免手臂顶在画面正中
+     * 与原版一致的 45° 内旋，让手臂从外侧朝屏幕中央斜伸
      */
-    private static final float ARM_INWARD_YAW = 55.0F;
-
-    /**
-     * 抬手，让手朝屏幕中央而不是垂在角落
-     */
-    private static final float ARM_PITCH = 20.0F;
+    private static final float ARM_INWARD_YAW = 45.0F;
 
     private CustomFirstPersonArmEntity armEntity;
 
@@ -108,11 +108,10 @@ public class CustomFirstPersonArmRenderer extends GeoEntityRenderer<LocalPlayer,
 
         poseStack.pushPose();
         try {
-            poseStack.translate(ARM_X, ARM_Y, ARM_Z);
-            // 先把模型正面翻到与相机同向（180），再整体向内偏，让手臂从右下角
-            // 斜着朝屏幕中央伸出；最后抬手，避免手垂在画面外
-            poseStack.mulPose(Axis.YP.rotationDegrees(ARM_FLIP_YAW + ARM_INWARD_YAW));
-            poseStack.mulPose(Axis.XP.rotationDegrees(ARM_PITCH));
+            // 按主手镜像：主手为右时锚点在右侧、内旋 +45°，主手为左时全部取反
+            float side = player.getMainArm() == HumanoidArm.RIGHT ? 1.0F : -1.0F;
+            poseStack.translate(side * ARM_X, ARM_Y, ARM_Z);
+            poseStack.mulPose(Axis.YP.rotationDegrees(ARM_FLIP_YAW + side * ARM_INWARD_YAW));
             drawnThisFrame = false;
             render(armEntity, 180.0F, partialTick, poseStack, collector, packedLight,
                     new CameraRenderState());

@@ -5,16 +5,27 @@ import com.elfmcys.ysm.client.animation.condition.FPArmConditionManager;
 import com.elfmcys.ysm.client.model.ModelRenderTargetLease;
 import com.elfmcys.ysm.geckolib3.core.builder.Animation;
 import com.elfmcys.ysm.geckolib3.core.builder.controller.AnimationControllerData;
+import com.elfmcys.ysm.geckolib3.core.event.predicate.AnimationEvent;
 import com.elfmcys.ysm.geckolib3.geo.render.built.GeoModel;
+import com.elfmcys.ysm.geckolib3.model.AnimatedGeoBone;
+import com.elfmcys.ysm.geckolib3.model.AnimatableEntity;
 import com.elfmcys.ysm.model.domain.RenderTargetIds;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.HumanoidArm;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
 public class CustomFirstPersonArmEntity extends CustomEntity<LocalPlayer> {
     private final PlayerAnimatableCapability mainModelEntity;
+
+    /**
+     * 手臂模型里的左右手臂骨骼，首次动画时按名字解析并缓存
+     */
+    private AnimatedGeoBone leftArmBone;
+    private AnimatedGeoBone rightArmBone;
+    private boolean armBonesResolved;
 
     public CustomFirstPersonArmEntity(LocalPlayer player, PlayerAnimatableCapability mainModelEntity) {
         super(player, false);
@@ -29,6 +40,41 @@ public class CustomFirstPersonArmEntity extends CustomEntity<LocalPlayer> {
 
     public PlayerAnimatableCapability getMainModelEntity() {
         return mainModelEntity;
+    }
+
+    /**
+     * 第一人称只保留主手：手臂模型（models/arm.json）里左右两条手臂是分开的骨骼
+     * （LeftArm/RightArm 各自带前臂与手），两条一起渲染会像"两只手"。
+     * 这里在每帧动画应用之后把副手整条链隐藏掉——codeAnimation 正是动画之后的钩子，
+     * 与 PlayerAnimatableCapability 隐藏第一人称头部用的是同一个位置。
+     */
+    @Override
+    protected void codeAnimation(AnimationEvent<? extends AnimatableEntity<LocalPlayer>> animationEvent,
+                                boolean shouldUpdate) {
+        super.codeAnimation(animationEvent, shouldUpdate);
+        var model = getLoadedGeoModel();
+        if (model == null) {
+            return;
+        }
+        if (!armBonesResolved) {
+            armBonesResolved = true;
+            for (var bone : model.getSortedBones()) {
+                var name = bone.getName();
+                if ("LeftArm".equals(name)) {
+                    leftArmBone = bone;
+                } else if ("RightArm".equals(name)) {
+                    rightArmBone = bone;
+                }
+            }
+        }
+        var mainIsRight = getEntity().getMainArm() == HumanoidArm.RIGHT;
+        if (offArmBone(mainIsRight) != null) {
+            offArmBone(mainIsRight).setHidden(true);
+        }
+    }
+
+    private AnimatedGeoBone offArmBone(boolean mainIsRight) {
+        return mainIsRight ? leftArmBone : rightArmBone;
     }
 
     @Override
