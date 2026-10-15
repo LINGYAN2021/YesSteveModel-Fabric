@@ -6,11 +6,9 @@ import com.elfmcys.ysm.capability.fabric.EntityCapabilityHolder;
 import com.elfmcys.ysm.client.entity.CustomFirstPersonArmEntity;
 import com.elfmcys.ysm.geckolib3.geo.GeoEntityRenderer;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
-import net.minecraft.world.entity.HumanoidArm;
 
 /**
  * 第一人称手臂渲染器。
@@ -28,29 +26,21 @@ import net.minecraft.world.entity.HumanoidArm;
  */
 public class CustomFirstPersonArmRenderer extends GeoEntityRenderer<LocalPlayer, CustomFirstPersonArmEntity> {
     /**
-     * 相机位于眼位（右手系：+X 右、+Y 上、-Z 前方）。手臂模型与主模型同属
-     * "脚底为原点、16 单位/格"的空间，肩部枢轴在模型内 y≈1.86 格、x≈±0.072 格
-     * （LeftArm/RightArm pivot = ±1.15, 29.775, 0）。
+     * 摆放完全照搬官方实现（从官方 2.6.5 的渲染类字节码里读出来的）：
+     * 官方在相机空间的姿态栈上只做了一句 {@code translate(0.0, -1.5, 0.0)}，
+     * 没有任何旋转、没有 X/Z 偏移，然后用专用手臂渲染模式绘制模型。
      *
-     * <p>锚点直接取原版第一人称手臂的位置：原版 renderPlayerArm 里做的是
-     * {@code translate(side*0.64, -0.6, -0.72)} + 绕 Y {@code side*45°}。
-     * 把模型的肩部对齐到该锚点，反推出模型原点应放的位置，所以这里的
-     * X/Y 是"锚点减肩部枢轴"（0.64+0.05、-0.6-1.86、-0.72-0.05）。
+     * <p>所以这里也保持同样的极简做法。模型朝向由渲染器的 (180 - yaw) 负责，
+     * 传 180 时该旋转为 0，模型保持建模朝向，与官方一致。
      */
-    private static final float ARM_X = 0.69F;
-    private static final float ARM_Y = -2.46F;
-    private static final float ARM_Z = -0.77F;
+    private static final float ARM_X = 0.0F;
+    private static final float ARM_Y = -1.5F;
+    private static final float ARM_Z = 0.0F;
 
     /**
-     * 模型建模时正面朝 +Z（与相机同向的是 -Z），不翻的话手臂会正对镜头伸过来
-     * （只能看到袖口端面）
+     * 传给渲染器的 yaw：180 使 (180 - yaw) 为 0，即不加额外旋转
      */
-    private static final float ARM_FLIP_YAW = 180.0F;
-
-    /**
-     * 与原版一致的 45° 内旋，让手臂从外侧朝屏幕中央斜伸
-     */
-    private static final float ARM_INWARD_YAW = 45.0F;
+    private static final float ARM_YAW = 180.0F;
 
     private CustomFirstPersonArmEntity armEntity;
 
@@ -108,12 +98,9 @@ public class CustomFirstPersonArmRenderer extends GeoEntityRenderer<LocalPlayer,
 
         poseStack.pushPose();
         try {
-            // 按主手镜像：主手为右时锚点在右侧、内旋 +45°，主手为左时全部取反
-            float side = player.getMainArm() == HumanoidArm.RIGHT ? 1.0F : -1.0F;
-            poseStack.translate(side * ARM_X, ARM_Y, ARM_Z);
-            poseStack.mulPose(Axis.YP.rotationDegrees(ARM_FLIP_YAW + side * ARM_INWARD_YAW));
+            poseStack.translate(ARM_X, ARM_Y, ARM_Z);
             drawnThisFrame = false;
-            render(armEntity, 180.0F, partialTick, poseStack, collector, packedLight,
+            render(armEntity, ARM_YAW, partialTick, poseStack, collector, packedLight,
                     new CameraRenderState());
         } finally {
             poseStack.popPose();
