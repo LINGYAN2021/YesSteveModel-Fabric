@@ -3,24 +3,22 @@ package com.elfmcys.ysm.client.renderer;
 /**
  * 第一人称手臂摆放参数，可在游戏内用 {@code /ysmclient armpose} 实时调整。
  *
- * <p>默认值是进游戏目视调出来的：相机空间姿态栈上 {@code translate(0.35, -2.2, -0.45)}，
- * 不旋转、不缩放，整条手臂模型画一次——手臂整体在相机前下方偏右，
- * 从上方俯视前臂与手背，接近官方第一人称的样子。
+ * <p>渲染器先照搬原版 {@code renderPlayerArm} 空手分支的变换链（把模型放到原版手臂的位置），
+ * 这里的 x/y/z/sx/sy/sz 是链条之后、模型空间里的对齐偏移：把手臂模型的肩关节
+ * （约 (±0.072, 1.861, 0)，方块单位）对齐到原版手臂部件原点，并用
+ * {@code scale(1,-1,-1)}（绕 X 180°）把手臂的 -y 延伸方向对齐到原版部件的 +y。
+ * yaw/pitch 在缩放前绕 Y/X 旋转，供目视微调。
  *
  * <p>注意：官方第一人称不乘模型的 widthScale/heightScale（直调 NativeRenderer.render，
  * 不走第三人称 preRender 的缩放），渲染器里也不要加回来。
- *
- * <p>参考值：官方 1.21.1 为 {@code translate(0, -1.5, 0)}；官方 26.1 neoforge 为每只手
- * {@code translate(±0.25, 1.8, 0)} + {@code scale(-1,-1,1)}（可用
- * {@code /ysmclient armpose y 1.8} + {@code sx -1} + {@code sy -1} 复现）。
  */
 public final class ArmPoseState {
-    private static volatile float x = 0.35F;
-    private static volatile float y = -2.2F;
-    private static volatile float z = -0.45F;
+    private static volatile float x = -0.072F;
+    private static volatile float y = 1.861F;
+    private static volatile float z = 0.0F;
     private static volatile float sx = 1.0F;
-    private static volatile float sy = 1.0F;
-    private static volatile float sz = 1.0F;
+    private static volatile float sy = -1.0F;
+    private static volatile float sz = -1.0F;
     private static volatile float yaw = 0.0F;
     private static volatile float pitch = 0.0F;
 

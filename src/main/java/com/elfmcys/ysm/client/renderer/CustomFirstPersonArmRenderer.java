@@ -14,6 +14,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.world.entity.HumanoidArm;
 
 /**
  * 第一人称手臂渲染器。
@@ -98,10 +99,27 @@ public class CustomFirstPersonArmRenderer extends GeoEntityRenderer<LocalPlayer,
                 ? CustomTranslucentRenderType.create(data.texture)
                 : RenderTypes.armorCutoutNoCull(data.texture);
 
-        // 与官方 1.21.1 一致：translate(0, -1.5, 0)，不旋转、不乘模型缩放
+        // 照搬原版 renderPlayerArm 空手的变换链（不含挥动项），让自定义手臂落在
+        // 原版手臂的位置——第一人称手臂的正确观感由这条链保证，而不是手摆参数。
         poseStack.pushPose();
         try {
-            poseStack.translate(ArmPoseState.x(), ArmPoseState.y(), ArmPoseState.z());
+            boolean mainIsRight = player.getMainArm() == HumanoidArm.RIGHT;
+            float invert = mainIsRight ? 1.0F : -1.0F;
+            poseStack.translate(invert * 0.64F, -0.6F, -0.72F);
+            poseStack.mulPose(Axis.YP.rotationDegrees(invert * 45.0F));
+            poseStack.translate(invert * -1.0F, 3.6F, 3.5F);
+            poseStack.mulPose(Axis.ZP.rotationDegrees(invert * 120.0F));
+            poseStack.mulPose(Axis.XP.rotationDegrees(200.0F));
+            poseStack.mulPose(Axis.YP.rotationDegrees(invert * -135.0F));
+            poseStack.translate(invert * 5.6F, 0.0F, 0.0F);
+
+            // 再把手臂模型对齐到原版手臂部件的原点：手臂模型肩 pivot 约在
+            // (±0.072, 1.861, 0)（方块单位），手臂沿 -y 向下延伸；原版部件沿 +y
+            // 延伸，所以 scale(1,-1,-1)（=绕 X 转 180°，行列式为正不翻面）对齐。
+            // 左撇子主手时画的是 LeftArm，对齐偏移的 x 跟着镜像。
+            // ArmPoseState 的 x/y/z 就是这段对齐偏移，可用 /ysmclient armpose 微调。
+            float alignX = mainIsRight ? ArmPoseState.x() : -ArmPoseState.x();
+            poseStack.translate(alignX, ArmPoseState.y(), ArmPoseState.z());
             if (ArmPoseState.pitch() != 0.0F) {
                 poseStack.mulPose(Axis.XP.rotationDegrees(ArmPoseState.pitch()));
             }
@@ -109,6 +127,7 @@ public class CustomFirstPersonArmRenderer extends GeoEntityRenderer<LocalPlayer,
                 poseStack.mulPose(Axis.YP.rotationDegrees(ArmPoseState.yaw()));
             }
             poseStack.scale(ArmPoseState.sx(), ArmPoseState.sy(), ArmPoseState.sz());
+
             collector.submitCustomGeometry(poseStack, renderType,
                     (pose, consumer) -> NativeRenderer.render(
                             consumer, pose, data.modelState.getNativeState(),
