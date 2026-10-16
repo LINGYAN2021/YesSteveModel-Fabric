@@ -27,12 +27,11 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
  * <p>拿不到模型或模型尚未加载时返回 false，调用方保留原版手臂——
  * 宁可显示原版手臂，也不要在第一人称里把手臂弄丢。
  *
- * <p>摆放照搬官方 1.21.1 实现（官方 2.6.x fabric 渲染类字节码）：
- * 相机空间姿态栈上 {@code translate(0, -1.5, 0)}，不旋转、不缩放，并且
- * <b>不</b>乘模型的 widthScale/heightScale——官方第一人称直调
+ * <p>摆放参数见 {@link ArmPoseState}（默认值为进游戏目视调整的结果，接近官方观感），
+ * 关键是<b>不</b>乘模型的 widthScale/heightScale——官方第一人称直调
  * {@link NativeRenderer#render}，不像第三人称那样过 {@code preRender} 的缩放。
- * （官方 26.1 neoforge 为每只手 {@code translate(±0.25, 1.8, 0)} + {@code scale(-1,-1,1)}，
- * 语义等价于把模型翻转倒挂；两种摆法可用 {@code /ysmclient armpose} 切换微调。）
+ * （参考：官方 1.21.1 为 {@code translate(0, -1.5, 0)}；官方 26.1 neoforge 为每只手
+ * {@code translate(±0.25, 1.8, 0)} + {@code scale(-1,-1,1)}。）
  */
 public class CustomFirstPersonArmRenderer extends GeoEntityRenderer<LocalPlayer, CustomFirstPersonArmEntity> {
     private CustomFirstPersonArmEntity armEntity;
