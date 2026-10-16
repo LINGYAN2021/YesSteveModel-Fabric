@@ -113,6 +113,15 @@ public class CustomFirstPersonArmRenderer extends GeoEntityRenderer<LocalPlayer,
         // 而不是手摆参数。装备升降项（inverseArmHeight）在挂钩点拿不到，暂缺。
         poseStack.pushPose();
         try {
+            // 目视微调偏移在最前面（相机空间）：y+ 就是往上抬，可用 /ysmclient armpose 调
+            poseStack.translate(ArmPoseState.x(), ArmPoseState.y(), ArmPoseState.z());
+            if (ArmPoseState.pitch() != 0.0F) {
+                poseStack.mulPose(Axis.XP.rotationDegrees(ArmPoseState.pitch()));
+            }
+            if (ArmPoseState.yaw() != 0.0F) {
+                poseStack.mulPose(Axis.YP.rotationDegrees(ArmPoseState.yaw()));
+            }
+
             boolean mainIsRight = player.getMainArm() == HumanoidArm.RIGHT;
             float invert = mainIsRight ? 1.0F : -1.0F;
 
@@ -136,19 +145,12 @@ public class CustomFirstPersonArmRenderer extends GeoEntityRenderer<LocalPlayer,
             poseStack.mulPose(Axis.YP.rotationDegrees(invert * -135.0F));
             poseStack.translate(invert * 5.6F, 0.0F, 0.0F);
 
-            // 再把手臂模型对齐到原版手臂部件的原点：手臂模型肩 pivot 约在
-            // (±0.072, 1.861, 0)（方块单位），手臂沿 -y 向下延伸；原版部件沿 +y
-            // 延伸，所以 scale(1,-1,-1)（=绕 X 转 180°，行列式为正不翻面）对齐。
+            // 再把手臂模型对齐到原版手臂部件的原点（固定常量）：
+            // 手臂模型肩 pivot 约在 (±0.072, 1.861, 0)（方块单位），手臂沿 -y 向下延伸；
+            // 原版部件沿 +y 延伸，所以 scale(1,-1,-1)（=绕 X 转 180°，行列式为正不翻面）对齐。
             // 左撇子主手时画的是 LeftArm，对齐偏移的 x 跟着镜像。
-            // ArmPoseState 的 x/y/z 就是这段对齐偏移，可用 /ysmclient armpose 微调。
-            float alignX = mainIsRight ? ArmPoseState.x() : -ArmPoseState.x();
-            poseStack.translate(alignX, ArmPoseState.y(), ArmPoseState.z());
-            if (ArmPoseState.pitch() != 0.0F) {
-                poseStack.mulPose(Axis.XP.rotationDegrees(ArmPoseState.pitch()));
-            }
-            if (ArmPoseState.yaw() != 0.0F) {
-                poseStack.mulPose(Axis.YP.rotationDegrees(ArmPoseState.yaw()));
-            }
+            float alignX = mainIsRight ? -0.0719F : 0.0719F;
+            poseStack.translate(alignX, 1.861F, 0.0F);
             poseStack.scale(ArmPoseState.sx(), ArmPoseState.sy(), ArmPoseState.sz());
 
             collector.submitCustomGeometry(poseStack, renderType,
