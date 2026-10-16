@@ -21,11 +21,12 @@ public class CustomFirstPersonArmEntity extends CustomEntity<LocalPlayer> {
     private final PlayerAnimatableCapability mainModelEntity;
 
     /**
-     * 手臂模型里的左右手臂骨骼，首次动画时按名字解析并缓存
+     * 手臂模型里的左右手臂骨骼，按名字解析并缓存；缓存的骨骼属于某个模型实例，
+     * 模型热切换后实例变了，需要重新解析（否则隐藏打在旧骨骼上，新模型双臂都显示）
      */
     private AnimatedGeoBone leftArmBone;
     private AnimatedGeoBone rightArmBone;
-    private boolean armBonesResolved;
+    private Object armBonesModel = null;
 
     public CustomFirstPersonArmEntity(LocalPlayer player, PlayerAnimatableCapability mainModelEntity) {
         super(player, false);
@@ -48,6 +49,9 @@ public class CustomFirstPersonArmEntity extends CustomEntity<LocalPlayer> {
      * 两条都画会在屏幕上叠成一团柱子；官方第一人称实际只能看到主手那一条。
      * 这里在每帧动画应用之后把副手整条链隐藏掉——codeAnimation 正是动画之后的钩子，
      * 与 PlayerAnimatableCapability 隐藏第一人称头部用的是同一个位置。
+     *
+     * <p>骨骼名优先精确匹配 LeftArm/RightArm；自定义模型命名不统一时
+     * 退化为大小写不敏感的包含匹配（"leftarm"/"rightarm"），都找不到才放弃隐藏。
      */
     @Override
     protected void codeAnimation(AnimationEvent<? extends AnimatableEntity<LocalPlayer>> animationEvent,
@@ -57,14 +61,26 @@ public class CustomFirstPersonArmEntity extends CustomEntity<LocalPlayer> {
         if (model == null) {
             return;
         }
-        if (!armBonesResolved) {
-            armBonesResolved = true;
+        if (armBonesModel != model.getModel()) {
+            armBonesModel = model.getModel();
+            leftArmBone = null;
+            rightArmBone = null;
             for (var bone : model.getSortedBones()) {
                 var name = bone.getName();
                 if ("LeftArm".equals(name)) {
                     leftArmBone = bone;
                 } else if ("RightArm".equals(name)) {
                     rightArmBone = bone;
+                }
+            }
+            if (leftArmBone == null || rightArmBone == null) {
+                for (var bone : model.getSortedBones()) {
+                    var lower = bone.getName().toLowerCase(java.util.Locale.ROOT);
+                    if (leftArmBone == null && lower.contains("left") && lower.contains("arm")) {
+                        leftArmBone = bone;
+                    } else if (rightArmBone == null && lower.contains("right") && lower.contains("arm")) {
+                        rightArmBone = bone;
+                    }
                 }
             }
         }

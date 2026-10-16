@@ -14,6 +14,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.HumanoidArm;
 
 /**
@@ -79,6 +80,14 @@ public class CustomFirstPersonArmRenderer extends GeoEntityRenderer<LocalPlayer,
             return false;
         }
 
+        // 与原版一致：主手拿着物品时不画手臂（物品仍由原版管线绘制），
+        // 主手空手时才接管原版手臂。官方是用手臂模型的 hold 动画 + 挂点层画物品，
+        // 我们的挂点层还有缺口（见 known-issues/rendering.md），先按原版观感隐藏。
+        if (!player.getMainHandItem().isEmpty()) {
+            diag("skip: main hand holds item");
+            return false;
+        }
+
         if (armEntity == null || armEntity.getEntity() != player) {
             armEntity = new CustomFirstPersonArmEntity(player, cap);
         }
@@ -99,14 +108,28 @@ public class CustomFirstPersonArmRenderer extends GeoEntityRenderer<LocalPlayer,
                 ? CustomTranslucentRenderType.create(data.texture)
                 : RenderTypes.armorCutoutNoCull(data.texture);
 
-        // 照搬原版 renderPlayerArm 空手的变换链（不含挥动项），让自定义手臂落在
-        // 原版手臂的位置——第一人称手臂的正确观感由这条链保证，而不是手摆参数。
+        // 照搬原版 renderPlayerArm 空手的变换链（含挥动），让自定义手臂落在
+        // 原版手臂的位置并随攻击挥动——第一人称手臂的正确观感由这条链保证，
+        // 而不是手摆参数。装备升降项（inverseArmHeight）在挂钩点拿不到，暂缺。
         poseStack.pushPose();
         try {
             boolean mainIsRight = player.getMainArm() == HumanoidArm.RIGHT;
             float invert = mainIsRight ? 1.0F : -1.0F;
-            poseStack.translate(invert * 0.64F, -0.6F, -0.72F);
+
+            // —— 挥动部分（原版 renderPlayerArm 开头）——
+            float attackValue = player.getAttackAnim(partialTick);
+            float sqrtAttack = Mth.sqrt(attackValue);
+            float xSwing = -0.3F * Mth.sin(sqrtAttack * (float) Math.PI);
+            float ySwing = 0.4F * Mth.sin(sqrtAttack * (float) (Math.PI * 2));
+            float zSwing = -0.4F * Mth.sin(attackValue * (float) Math.PI);
+            poseStack.translate(invert * (xSwing + 0.64F), ySwing - 0.6F, zSwing - 0.72F);
             poseStack.mulPose(Axis.YP.rotationDegrees(invert * 45.0F));
+            float zSwingRot = Mth.sin(attackValue * attackValue * (float) Math.PI);
+            float ySwingRot = Mth.sin(sqrtAttack * (float) Math.PI);
+            poseStack.mulPose(Axis.YP.rotationDegrees(invert * ySwingRot * 70.0F));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(invert * zSwingRot * -20.0F));
+
+            // —— 手臂部件变换（原版 renderPlayerArm 后半段）——
             poseStack.translate(invert * -1.0F, 3.6F, 3.5F);
             poseStack.mulPose(Axis.ZP.rotationDegrees(invert * 120.0F));
             poseStack.mulPose(Axis.XP.rotationDegrees(200.0F));
