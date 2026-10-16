@@ -20,7 +20,7 @@ import java.util.List;
  */
 public class ArmPoseCommand {
     private static final String NAME = "armpose";
-    private static final List<String> AXES = List.of("x", "y", "z", "yaw", "pitch");
+    private static final List<String> AXES = List.of("x", "y", "z", "sx", "sy", "sz", "yaw", "pitch");
 
     public static LiteralArgumentBuilder<CommandSourceStack> get() {
         return Commands.literal(NAME)

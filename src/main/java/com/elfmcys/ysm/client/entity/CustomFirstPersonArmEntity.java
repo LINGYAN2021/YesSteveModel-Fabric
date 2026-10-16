@@ -44,7 +44,8 @@ public class CustomFirstPersonArmEntity extends CustomEntity<LocalPlayer> {
 
     /**
      * 第一人称只保留主手：手臂模型（models/arm.json）里左右两条手臂是分开的骨骼
-     * （LeftArm/RightArm 各自带前臂与手），两条一起渲染会像"两只手"。
+     * （LeftArm/RightArm 各自带前臂与手），相机几乎贴在两条手臂之间，
+     * 两条都画会在屏幕上叠成一团柱子；官方第一人称实际只能看到主手那一条。
      * 这里在每帧动画应用之后把副手整条链隐藏掉——codeAnimation 正是动画之后的钩子，
      * 与 PlayerAnimatableCapability 隐藏第一人称头部用的是同一个位置。
      */

@@ -8,7 +8,7 @@
 - 透明排序只覆盖单次模型 draw；跨实体、跨模型和跨 draw 的次序仍由上层决定。Iris shadow 不执行透明排序。
 - PBR 效果依赖 Iris 版本、shader pack 和 companion texture 接入，不能仅凭 baked tangent 存在保证一致。
 - `VertexConsumer` fallback 当前错误解释 packed normal 的分量顺序与 SNORM 缩放，光照方向不能视为与 Vanilla / Iris direct 输出等价。
-- 当前实际接通的骨骼附着点 layer 只有右手持物；副手、头部、鞘翅、肩部和背包等仍未进入完整主链，第一人称手臂与背景入口也未迁移完成。
+- 当前实际接通的骨骼附着点 layer 只有右手持物；副手、头部、鞘翅、肩部和背包等仍未进入完整主链，背景入口也未迁移完成。第一人称手臂已接管（按官方做法不乘模型缩放、只保留主手、摆放可用 `/ysmclient armpose` 调整），手持物品仍由原版管线绘制。
 
 ## 正确性与失败处理
 
