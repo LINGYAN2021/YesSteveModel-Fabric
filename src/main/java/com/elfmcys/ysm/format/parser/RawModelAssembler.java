@@ -13,6 +13,7 @@ import com.elfmcys.ysm.format.schema.model.ModelFileWriter;
 import com.elfmcys.ysm.model.domain.Hash256;
 import com.elfmcys.ysm.natives.image.Image;
 import mixel.common.ImageOuterClass;
+import mixel.common.SoundOuterClass;
 import mixel.common.StringPairOuterClass;
 import mixel.asset.model.ModelDataOuterClass;
 import mixel.asset.model.data.AnimationControllerOuterClass;
@@ -316,11 +317,11 @@ final class RawModelAssembler implements Closeable {
                                    ModelManifest sourceManifest) throws IOException {
         var files = sourceManifest.files;
         if (!StringUtils.isBlank(files.soundPath)) {
-            writeSounds(files.soundPath);
+            writeSounds(manifest, files.soundPath);
         } else if (files.player != null && !StringUtils.isBlank(files.player.soundPath)) {
-            writeSounds(files.player.soundPath);
+            writeSounds(manifest, files.player.soundPath);
         } else {
-            writeSounds("sounds");
+            writeSounds(manifest, "sounds");
         }
 
         var strings = dryRun ? null : StringDataOuterClass.StringData.newInstance();
@@ -434,11 +435,26 @@ final class RawModelAssembler implements Closeable {
         return true;
     }
 
-    private void writeSounds(String path) {
-        // TODO
-//        collectFiles(path, ".ogg", "sound", true, (name, buf) -> {
-//
-//        });
+    private void writeSounds(@Nullable ManifestOuterClass.Manifest manifest, String path) {
+        source.collectFiles(path, ".ogg", "sound", true, (name, buf) -> {
+            if (dryRun) {
+                return;
+            }
+            try {
+                var info = SoundProbe.probe(buf);
+                int streamId = writer().addStream(buf);
+                Objects.requireNonNull(manifest, "manifest").getMutableCommonBehavior().addSounds(
+                        SoundOuterClass.Sound.newInstance()
+                                .setName(name)
+                                .setEncoding(info.encoding())
+                                .setChannels(info.channels())
+                                .setSampleRate(info.sampleRate())
+                                .setSamples(info.samples())
+                                .setStreamId(streamId));
+            } catch (IOException error) {
+                throw new UncheckedIOException(error);
+            }
+        });
     }
 
     private void writeFunctions(@Nullable StringDataOuterClass.StringData strings, String path) {
