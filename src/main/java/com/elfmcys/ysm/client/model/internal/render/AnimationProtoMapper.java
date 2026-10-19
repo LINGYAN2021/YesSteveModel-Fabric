@@ -92,8 +92,20 @@ public final class AnimationProtoMapper {
         instructions.sort(Comparator.comparingDouble(EventKeyFrame::getStartTick));
 
         var blendWeight = source.hasBlendWeight() ? value(source.getBlendWeight(), parser) : null;
+
+        var sourceSounds = source.hasSoundKeyframes()
+                ? source.getSoundKeyframes() : null;
+        var sounds = new ReferenceArrayList<EventKeyFrame<String>>(
+                sourceSounds != null ? sourceSounds.length() : 0);
+        if (sourceSounds != null) {
+            for (var sourceFrame : sourceSounds) {
+                sounds.add(new EventKeyFrame<>(sourceFrame.getStartTick(), sourceFrame.getData()));
+            }
+        }
+        sounds.sort(Comparator.comparingDouble(EventKeyFrame::getStartTick));
+
         return new Animation(source.getName(), source.getLength(), loop(source.getLoop()), blendWeight,
-                bones, new ReferenceArrayList<>(), instructions);
+                bones, sounds, instructions);
     }
 
     private static List<BoneKeyFrame> frames(

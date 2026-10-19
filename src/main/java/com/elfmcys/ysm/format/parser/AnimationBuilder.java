@@ -44,6 +44,11 @@ public class AnimationBuilder {
             }
             dst.addInstructionKeyframes(frame);
         }
+        for (var sound : src.soundKeyFrames) {
+            dst.addSoundKeyframes(AnimationOuterClass.EventKeyFrame.newInstance()
+                    .setStartTick(sound.startTick)
+                    .setData(Objects.requireNonNullElse(sound.eventData, "")));
+        }
         return dst;
     }
 
