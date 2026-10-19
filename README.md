@@ -70,7 +70,7 @@ Apache-2.0 不覆盖上述独立标准、内置资产或第三方作品；对应
 | v1 / v2 旧版加密模型 | 支持（原生层解密） |
 | **v3 加密模型** | **不支持**，原生层 `LegacyBundle::Validate` 只接受版本 1 / 2，Java 侧的导入实现是上游留的占位符 |
 | 第一人称手臂 | 支持（含挥动动画、只渲染主手） |
-| **自定义音效**（模型自带音频） | 通路已实现（容器音频预读 + Opus / Vorbis / PCM 解码），**尚未实测确认** |
+| 自定义音效（模型自带音频） | 支持（转换管线写入音频资源、动画声音关键帧；Opus / Vorbis / PCM 解码） |
 | Iris 光影 | 基础兼容已恢复（顶点格式 / 阴影 pass / entity id）；光影下的 PBR 贴图未接入 |
 | 第三人称模型、纸娃娃、模型选择界面、动画轮盘 | 可用 |
 
@@ -98,6 +98,12 @@ Apache-2.0 不覆盖上述独立标准、内置资产或第三方作品；对应
   `renderPlayerArm` 的变换链并对齐肩关节，副手整条骨骼链在 `codeAnimation` 里隐藏
   （与玩家能力隐藏第一人称头部用的是同一处钩子）。模型未就绪时退回原版手臂，
   避免出现「两只手都没有」。
+- **模型音频**：上游这条链路有多处是空的——`SoundStream` 没有字段、
+  `ModelRenderTargetLoader` 把 sounds 硬写成空 Map、`ResourceHolder.soundHolder` 从不赋值、
+  `CustomEntity.getSoundStream` 恒返回空，而且转换管线并不写出音频资源、
+  animation proto 也没有声音关键帧字段。现在加载阶段预读容器里的全部音频、
+  按模型登记 `ModelSoundHolder` 后按名取流；解码沿用已有的 Vorbis / Opus / PCM 实现
+  与原生 Opus 解码器，动画声音关键帧随 proto 一并保留。
 - **Iris 光影兼容**：开光影后实体 RenderType 会换成 Iris 的扩展顶点格式（在普通 ENTITY 顶点后追加
   `entity_id` / `mid_tex_uv` / `tangent`），字节数随之变化，原生层必须按对应布局解释缓冲。
   这里用反射读取 `IrisVertexFormats.ENTITY` 做同一性比较，再按顶点字节数 56 / 55 / 54 分派到
