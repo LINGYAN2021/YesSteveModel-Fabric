@@ -9,7 +9,7 @@ import java.util.Objects;
 /** Coordinates raw source access and model assembly. The caller retains ownership of the VFS. */
 public final class ModelParser {
     public static final String CANONICALIZER_PROFILE_VERSION = "1";
-    public static final String PARSER_PROFILE_VERSION = "3";  // 3: 容器写入模型音频（sounds/ → stream-N + Common.sounds）
+    public static final String PARSER_PROFILE_VERSION = "4";  // 4: animation proto 增加 sound_keyframes
     public static final String IMAGE_POLICY_PROFILE_VERSION = "1";
 
     private ModelParser() {
